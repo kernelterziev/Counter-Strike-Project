@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CS Platform - Counter-Strike Community{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --cs-orange: #ff6b35;
+            --cs-dark: #1a1a1a;
+            --cs-light: #2d2d2d;
+            --cs-accent: #00d4ff;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--cs-dark) 0%, var(--cs-light) 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(26, 26, 26, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--cs-orange);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--cs-orange) !important;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: #ffffff !important;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--cs-orange) !important;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--cs-orange), #ff8f65);
+            border: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #e55a2b, var(--cs-orange));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn-outline-light:hover {
+            background-color: var(--cs-accent);
+            border-color: var(--cs-accent);
+        }
+
+        .card {
+            background: rgba(45, 45, 45, 0.8);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            border-color: var(--cs-orange);
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.2);
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+                        url('https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .stats-badge {
+            background: linear-gradient(45deg, var(--cs-accent), #0099cc);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 0.25rem;
+        }
+
+        .rank-badge {
+            background: linear-gradient(45deg, gold, #ffd700);
+            color: #000;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .footer {
+            background: var(--cs-dark);
+            border-top: 2px solid var(--cs-orange);
+            margin-top: 4rem;
+        }
+
+        .alert-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            border: none;
+            color: white;
+        }
+
+        .alert-error {
+            background: linear-gradient(45deg, #dc3545, #e74c3c);
+            border: none;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="bi bi-crosshair me-2"></i>CS Platform
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'player_list' %}">Players</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'team_list' %}">Teams</a>
+                    </li>
+                    {% comment %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'match_list' %}">Matches</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'tournament_list' %}">Tournaments</a>
+                    </li>
+                    {% endcomment %}
+                </ul>
+
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle me-1"></i>{{ user.username }}
+                                {% if user.rank %}
+                                    <span class="rank-badge ms-2">{{ user.get_rank_display }}</span>
+                                {% endif %}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li><a class="dropdown-item" href="{% url 'player_detail' user.pk %}">My Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'profile_edit' %}">Edit Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                                {% if user.is_staff %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="/admin/">Admin Panel</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary ms-2" href="{% url 'register' %}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mt-5 pt-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="{% if not no_padding %}pt-5{% endif %}">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="bi bi-crosshair me-2"></i>CS Platform</h5>
+                    <p class="text-muted">The ultimate Counter-Strike community platform for players, teams, and tournaments.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-muted">© 2025 CS Platform. Made with ❤️ for the CS community.</p>
+                    <div>
+                        <a href="#" class="text-decoration-none me-3"><i class="bi bi-discord"></i></a>
+                        <a href="#" class="text-decoration-none me-3"><i class="bi bi-steam"></i></a>
+                        <a href="#" class="text-decoration-none"><i class="bi bi-twitch"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% block extra_js %}
+    {% endblock %}
+</body>
+</html>
