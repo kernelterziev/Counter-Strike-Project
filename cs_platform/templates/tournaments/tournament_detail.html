@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ tournament.name }} - Tournament Details{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Tournament Header -->
+            <div class="card mb-4">
+                {% if tournament.banner %}
+                    <img src="{{ tournament.banner.url }}" class="card-img-top" alt="{{ tournament.name }}"
+                         style="height: 300px; object-fit: cover;">
+                {% endif %}
+                <div class="card-header text-center py-4">
+                    <h1 class="mb-3">
+                        <i class="bi bi-trophy-fill text-warning me-2"></i>{{ tournament.name }}
+                    </h1>
+                    <div class="row justify-content-center">
+                        <div class="col-auto">
+                            {% if tournament.status == 'upcoming' %}
+                                <span class="badge bg-warning text-dark fs-6">Upcoming</span>
+                            {% elif tournament.status == 'ongoing' %}
+                                <span class="badge bg-success fs-6">Ongoing</span>
+                            {% elif tournament.status == 'completed' %}
+                                <span class="badge bg-secondary fs-6">Completed</span>
+                            {% else %}
+                                <span class="badge bg-danger fs-6">Cancelled</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5>About Tournament</h5>
+                            <p class="text-muted">{{ tournament.description|default:"No description available." }}</p>
+
+                            <div class="row g-3 mt-3">
+                                <div class="col-sm-6">
+                                    <div class="card bg-transparent border-primary">
+                                        <div class="card-body text-center">
+                                            <i class="bi bi-cash-stack display-6 text-warning"></i>
+                                            <h5 class="mt-2">Prize Pool</h5>
+                                            <h4 class="text-warning">${{ tournament.prize_pool|floatformat:0 }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="card bg-transparent border-success">
+                                        <div class="card-body text-center">
+                                            <i class="bi bi-people-fill display-6 text-success"></i>
+                                            <h5 class="mt-2">Teams</h5>
+                                            <h4 class="text-success">{{ participants.count }}/{{ tournament.max_teams }}</h4>
+                                            {% if spots_left > 0 %}
+                                                <small class="text-muted">{{ spots_left }} spots left</small>
+                                            {% else %}
+                                                <small class="text-warning">Tournament Full</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-transparent">
+                                <div class="card-body">
+                                    <h6><i class="bi bi-calendar3 text-primary"></i> Schedule</h6>
+                                    <p class="mb-2">
+                                        <strong>Start:</strong><br>
+                                        {{ tournament.start_date|date:"F d, Y \a\t H:i" }}
+                                    </p>
+                                    <p class="mb-2">
+                                        <strong>End:</strong><br>
+                                        {{ tournament.end_date|date:"F d, Y \a\t H:i" }}
+                                    </p>
+                                    <p class="mb-3">
+                                        <strong>Registration Deadline:</strong><br>
+                                        {{ tournament.registration_deadline|date:"F d, Y \a\t H:i" }}
+                                    </p>
+
+                                    <h6><i class="bi bi-person-badge text-success"></i> Organizer</h6>
+                                    <p class="mb-0">{{ tournament.organizer.username }}</p>
+                                    {% if tournament.organizer.rank %}
+                                        <span class="rank-badge">{{ tournament.organizer.get_rank_display }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registration Section -->
+            {% if can_register and available_teams %}
+            <div class="card mb-4 border-success">
+                <div class="card-header bg-success text-dark">
+                    <h5 class="mb-0"><i class="bi bi-rocket-takeoff me-2"></i>Register Your Team</h5>
+                </div>
+                <div class="card-body">
+                    <p>Registration is open! Choose one of your teams to participate:</p>
+                    <div class="text-center">
+                        <a href="{% url 'tournament_register' tournament.pk %}" class="btn btn-success btn-lg">
+                            <i class="bi bi-plus-circle me-2"></i>Register Team
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% elif user.is_authenticated and tournament.status == 'upcoming' %}
+            <div class="card mb-4 border-warning">
+                <div class="card-body text-center">
+                    {% if not spots_left %}
+                        <i class="bi bi-x-circle display-4 text-danger"></i>
+                        <h5 class="text-danger mt-2">Tournament Full</h5>
+                        <p class="text-muted">This tournament has reached maximum capacity.</p>
+                    {% else %}
+                        <i class="bi bi-info-circle display-4 text-warning"></i>
+                        <h5 class="text-warning mt-2">Cannot Register</h5>
+                        <p class="text-muted">You need to be a member of an active team to register.</p>
+                        <a href="{% url 'team_list' %}" class="btn btn-outline-light">
+                            <i class="bi bi-people me-2"></i>Browse Teams
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Participants -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-list-ul me-2"></i>Participating Teams ({{ participants.count }})</h5>
+                </div>
+                <div class="card-body">
+                    {% if participants %}
+                        <div class="row g-3">
+                            {% for participation in participants %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card bg-transparent border-primary">
+                                    <div class="card-body text-center">
+                                        {% if participation.team.logo %}
+                                            <img src="{{ participation.team.logo.url }}" alt="{{ participation.team.name }}"
+                                                 class="rounded mb-2" style="width: 60px; height: 60px; object-fit: cover;">
+                                        {% else %}
+                                            <i class="bi bi-shield-fill display-5 text-primary mb-2"></i>
+                                        {% endif %}
+                                        <h6>[{{ participation.team.tag }}] {{ participation.team.name }}</h6>
+                                        {% if participation.placement %}
+                                            <span class="badge bg-warning text-dark">
+                                                #{{ participation.placement }}
+                                                {% if participation.prize_won > 0 %}
+                                                    - ${{ participation.prize_won|floatformat:0 }}
+                                                {% endif %}
+                                            </span>
+                                        {% endif %}
+                                        <p class="text-muted small mt-2">
+                                            Registered: {{ participation.registration_date|date:"M d" }}
+                                        </p>
+                                        <a href="{% url 'team_detail' participation.team.pk %}" class="btn btn-outline-light btn-sm">
+                                            View Team
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-people display-4 text-muted"></i>
+                            <h5 class="text-muted mt-2">No teams registered yet</h5>
+                            <p class="text-muted">Be the first team to join this tournament!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Back Button -->
+            <div class="text-center mt-4">
+                <a href="{% url 'tournament_list' %}" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left"></i> Back to Tournaments
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

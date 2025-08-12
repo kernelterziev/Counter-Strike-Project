@@ -6,7 +6,8 @@ from django.contrib import messages
 from django.db import transaction
 from .models import Team, TeamMembership
 from .forms import TeamCreateForm, TeamJoinForm
-
+from django.views.generic import DeleteView
+from django.urls import reverse_lazy
 
 # Class-based view for team list
 class TeamListView(ListView):
@@ -14,7 +15,20 @@ class TeamListView(ListView):
     template_name = 'teams/team_list.html'
     context_object_name = 'teams'
     paginate_by = 12
-    queryset = Team.objects.filter(is_active=True)
+    ordering = ['-founded_date']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add professional teams separately
+        context['pro_teams'] = Team.objects.filter(
+            is_professional=True,
+            is_active=True
+        ).order_by('world_ranking')
+        return context
+
+    def get_queryset(self):
+        # Only show community teams in main list
+        return Team.objects.filter(is_professional=False, is_active=True).order_by('-founded_date')
 
 
 # Class-based view for team detail
@@ -23,13 +37,26 @@ class TeamDetailView(DetailView):
     template_name = 'teams/team_detail.html'
     context_object_name = 'team'
 
+    def get_queryset(self):
+        # Allow viewing ALL teams (both pro and community)
+        return Team.objects.filter(is_active=True)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         team = self.object
         context['members'] = team.memberships.filter(is_active=True).select_related('player')
-        context['recent_matches'] = team.matches_as_team1.union(team.matches_as_team2.all())[:5]
-        return context
 
+        # FIX: Separate queries instead of union
+        from matches.models import Match
+        team1_matches = Match.objects.filter(team1=team)
+        team2_matches = Match.objects.filter(team2=team)
+
+        # Combine and sort in Python
+        all_matches = list(team1_matches) + list(team2_matches)
+        all_matches.sort(key=lambda x: x.match_date, reverse=True)
+        context['recent_matches'] = all_matches[:5]
+
+        return context
 
 # Class-based view for team creation
 class TeamCreateView(LoginRequiredMixin, CreateView):
@@ -113,3 +140,17 @@ def join_team(request, pk):
 
     context = {'form': form, 'team': team}
     return render(request, 'teams/join_team.html', context)
+
+
+class TeamDeleteView(LoginRequiredMixin, DeleteView):
+    model = Team
+    success_url = reverse_lazy('team_list')
+
+    def get_queryset(self):
+        # Only team captain can delete
+        return Team.objects.filter(captain=self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        team = self.get_object()
+        messages.success(request, f'Team "{team.name}" has been deleted.')
+        return super().delete(request, *args, **kwargs)

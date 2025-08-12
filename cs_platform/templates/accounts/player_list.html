@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}Players - CS Platform{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="text-white"><i class="bi bi-people-fill me-2"></i>Players</h1>
+                <a href="{% url 'player_search' %}" class="btn btn-outline-light">
+                    <i class="bi bi-search me-2"></i>Advanced Search
+                </a>
+            </div>
+
+            <!-- Separate Pro and Community Players -->
+            {% if pro_players %}
+            <div class="mb-5">
+                <h2 class="text-center mb-4">
+                    <i class="bi bi-star-fill text-warning me-2"></i>Professional Players
+                </h2>
+                <div class="row g-4">
+                    {% for player in pro_players %}
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+                        <div class="card h-100 text-center border-warning">
+                            <div class="card-body">
+                                <!-- Auto Avatar with Robohash -->
+                                <img src="https://robohash.org/{{ player.username }}.png?size=80x80"
+                                     alt="{{ player.username }}"
+                                     class="rounded-circle mb-3" style="width: 80px; height: 80px;">
+
+                                <h5 class="card-title text-warning">{{ player.username }}</h5>
+
+                                {% if player.real_name %}
+                                    <p class="text-muted small">{{ player.real_name }}</p>
+                                {% endif %}
+
+                                {% if player.rank %}
+                                    <span class="rank-badge mb-2">{{ player.get_rank_display }}</span>
+                                {% endif %}
+
+                                {% if player.hltv_rating %}
+                                    <p class="text-success">
+                                        <i class="bi bi-graph-up"></i> Rating: {{ player.hltv_rating }}
+                                    </p>
+                                {% endif %}
+
+                                {% if player.country %}
+                                    <p class="text-white small">
+                                        <span class="flag-emoji me-1">{{ player.get_country_flag }}</span>{{ player.country }}
+                                    </p>
+                                {% endif %}
+
+                                <a href="{% url 'player_detail' player.pk %}" class="btn btn-outline-warning btn-sm">
+                                    View Profile
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <hr class="my-5">
+
+            <h2 class="text-center mb-4">
+                <i class="bi bi-people-fill text-primary me-2"></i>Community Players
+            </h2>
+            {% endif %}
+
+            <!-- Regular Players Grid -->
+            <div class="row g-4">
+                {% for player in players %}
+                <div class="col-md-6 col-lg-4 col-xl-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <!-- Auto Avatar or uploaded -->
+{% if player.avatar %}
+    <img src="{{ player.avatar.url }}" alt="{{ player.username }}"
+         class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;">
+{% else %}
+    <i class="bi bi-person-circle display-3 mb-3"></i>
+{% endif %}
+
+                            <h5 class="card-title text-white">{{ player.username }}</h5>
+
+                            {% if player.rank %}
+                                <span class="rank-badge mb-2">{{ player.get_rank_display }}</span>
+                            {% endif %}
+
+                            {% if player.country %}
+                                <p class="text-white small mt-1">
+                                    <span class="flag-emoji me-1">{{ player.get_country_flag }}</span>{{ player.country }}
+                                </p>
+                            {% endif %}
+
+                            {% if player.hours_played %}
+                                <p class="text-muted small">
+                                    <i class="bi bi-clock"></i> {{ player.hours_played }} hours
+                                </p>
+                            {% endif %}
+
+                            <a href="{% url 'player_detail' player.pk %}" class="btn btn-outline-light btn-sm">
+                                View Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="bi bi-people display-1 text-muted"></i>
+                        <h3 class="mt-3 text-muted">No players found</h3>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

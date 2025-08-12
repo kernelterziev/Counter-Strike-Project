@@ -10,7 +10,7 @@ from .forms import CustomUserCreationForm, UserProfileForm
 User = get_user_model()
 
 
-#Function-based view for home page
+# Function-based view for home page
 def home(request):
     """Landing page accessible to everyone"""
     context = {
@@ -20,7 +20,7 @@ def home(request):
     return render(request, 'accounts/home.html', context)
 
 
-#Function-based view for registration
+# Function-based view for registration
 def register(request):
     """User registration"""
     if request.method == 'POST':
@@ -38,7 +38,7 @@ def register(request):
     return render(request, 'registration/register.html', {'form': form})
 
 
-#Class-based view for player list
+# Class-based view for player list - UPDATED with pro players
 class PlayerListView(ListView):
     model = User
     template_name = 'accounts/player_list.html'
@@ -46,8 +46,20 @@ class PlayerListView(ListView):
     paginate_by = 20
     ordering = ['-date_joined']
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add professional players separately
+        context['pro_players'] = User.objects.filter(
+            is_professional=True
+        ).order_by('username')
+        return context
 
-#Class-based view for player detail
+    def get_queryset(self):
+        # Only show community players in main list
+        return User.objects.filter(is_professional=False).order_by('-date_joined')
+
+
+# Class-based view for player detail
 class PlayerDetailView(DetailView):
     model = User
     template_name = 'accounts/player_detail.html'
@@ -61,7 +73,7 @@ class PlayerDetailView(DetailView):
         return context
 
 
-#Class-based view for profile update
+# Class-based view for profile update
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = UserProfileForm
@@ -78,7 +90,7 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-#Function-based view for player search
+# Function-based view for player search
 def player_search(request):
     """Search players by username or rank"""
     query = request.GET.get('q', '')

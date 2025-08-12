@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block title %}Leaderboard - CS Platform{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-5">
+                <i class="bi bi-trophy-fill text-warning me-2"></i>Global Leaderboard
+            </h1>
+
+            <!-- Platform Stats -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-people-fill display-4 text-primary mb-3"></i>
+                            <h4>{{ total_players }}</h4>
+                            <p class="text-muted">Total Players</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-shield-fill display-4 text-success mb-3"></i>
+                            <h4>{{ total_teams }}</h4>
+                            <p class="text-muted">Active Teams</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-controller display-4 text-warning mb-3"></i>
+                            <h4>{{ total_matches }}</h4>
+                            <p class="text-muted">Matches Played</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Top Killers -->
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-crosshair text-danger me-2"></i>Top Fraggers</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for player in top_killers %}
+                            <div class="d-flex align-items-center justify-content-between mb-3 p-2 rounded"
+                                 style="background: rgba(255, 51, 102, 0.1);">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-danger me-3" style="width: 30px;">#{{ forloop.counter }}</span>
+                                    {% if player.avatar %}
+                                        <img src="{{ player.avatar.url }}" alt="{{ player.username }}"
+                                             class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                    {% else %}
+                                        <i class="bi bi-person-circle me-2" style="font-size: 2rem;"></i>
+                                    {% endif %}
+                                    <div>
+                                        <strong>{{ player.username }}</strong>
+                                        {% if player.rank %}
+                                            <br><span class="rank-badge">{{ player.get_rank_display }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold text-danger">{{ player.total_kills }} Kills</div>
+                                    <small class="text-muted">K/D: {{ player.kd_ratio }}</small>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-muted text-center">No statistics available yet.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Most Active Players -->
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-graph-up text-success me-2"></i>Most Active</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for player in most_active %}
+                            <div class="d-flex align-items-center justify-content-between mb-3 p-2 rounded"
+                                 style="background: rgba(0, 255, 136, 0.1);">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-success me-3" style="width: 30px;">#{{ forloop.counter }}</span>
+                                    {% if player.avatar %}
+                                        <img src="{{ player.avatar.url }}" alt="{{ player.username }}"
+                                             class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                    {% else %}
+                                        <i class="bi bi-person-circle me-2" style="font-size: 2rem;"></i>
+                                    {% endif %}
+                                    <div>
+                                        <strong>{{ player.username }}</strong>
+                                        {% if player.rank %}
+                                            <br><span class="rank-badge">{{ player.get_rank_display }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold text-success">{{ player.match_count }} Matches</div>
+                                    <small class="text-muted">Games Played</small>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-muted text-center">No statistics available yet.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Teams -->
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-shield-fill text-primary me-2"></i>Top Teams</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for team in top_teams %}
+                            <div class="d-flex align-items-center justify-content-between mb-3 p-2 rounded"
+                                 style="background: rgba(0, 212, 255, 0.1);">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-primary me-3" style="width: 30px;">#{{ forloop.counter }}</span>
+                                    {% if team.logo %}
+                                        <img src="{{ team.logo.url }}" alt="{{ team.name }}"
+                                             class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                    {% else %}
+                                        <i class="bi bi-shield-fill me-2 text-primary" style="font-size: 2rem;"></i>
+                                    {% endif %}
+                                    <div>
+                                        <strong>[{{ team.tag }}] {{ team.name }}</strong>
+                                        <br><small class="text-muted">{{ team.member_count }} members</small>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <a href="{% url 'team_detail' team.pk %}" class="btn btn-outline-light btn-sm">
+                                        View Team
+                                    </a>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-muted text-center">No teams found.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weapon Popularity -->
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-crosshair text-warning me-2"></i>Popular Weapons</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for weapon in weapon_popularity %}
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <strong>{{ weapon.weapon|upper }}</strong>
+                                    <br><small class="text-muted">{{ weapon.user_count }} players</small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-warning text-dark">{{ weapon.total_kills }} kills</span>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-muted text-center">No weapon statistics available.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

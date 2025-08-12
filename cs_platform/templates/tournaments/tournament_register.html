@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Register for {{ tournament.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center py-4">
+                    <h4><i class="bi bi-clipboard-check me-2"></i>Tournament Registration</h4>
+                    <h5 class="text-primary">{{ tournament.name }}</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label for="{{ form.team.id_for_label }}" class="form-label">Select Your Team</label>
+                            {{ form.team }}
+                            {% if form.team.errors %}
+                                <div class="text-danger small mt-1">{{ form.team.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Choose which team to register for this tournament</small>
+                        </div>
+
+                        <!-- Tournament Info -->
+                        <div class="card bg-transparent border-primary mb-4">
+                            <div class="card-body">
+                                <h6 class="text-primary">Tournament Details</h6>
+                                <p class="mb-2"><strong>Prize Pool:</strong> ${{ tournament.prize_pool|floatformat:0 }}</p>
+                                <p class="mb-2"><strong>Start:</strong> {{ tournament.start_date|date:"F d, Y \a\t H:i" }}</p>
+                                <p class="mb-2"><strong>Registration Deadline:</strong> {{ tournament.registration_deadline|date:"F d, Y \a\t H:i" }}</p>
+                                <p class="mb-0"><strong>Max Teams:</strong> {{ tournament.max_teams }}</p>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle me-2"></i>Register Team
+                            </button>
+                            <a href="{% url 'tournament_detail' tournament.pk %}" class="btn btn-outline-light">
+                                <i class="bi bi-arrow-left me-2"></i>Back to Tournament
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

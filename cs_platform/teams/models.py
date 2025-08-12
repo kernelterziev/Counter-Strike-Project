@@ -7,6 +7,11 @@ User = get_user_model()
 
 
 class Team(models.Model):
+    is_professional = models.BooleanField(default=False)
+    prize_money = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    world_ranking = models.IntegerField(null=True, blank=True)
+    logo_url = models.URLField(blank=True)  # For official team logos
+    official_website = models.URLField(blank=True)
     name = models.CharField(max_length=100, unique=True)
     tag = models.CharField(max_length=10, unique=True)  # Team tag like [NAVI]
     logo = models.ImageField(upload_to='team_logos/', blank=True, null=True)
@@ -15,6 +20,105 @@ class Team(models.Model):
     country = models.CharField(max_length=50, blank=True)
     is_active = models.BooleanField(default=True)
     captain = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='captained_teams')
+
+    def get_country_flag(self):
+        """Return flag emoji for country"""
+        flag_map = {
+            # Balkans & Eastern Europe
+            'macedonia': '🇲🇰',
+            'north macedonia': '🇲🇰',
+            'bulgaria': '🇧🇬',
+            'serbia': '🇷🇸',
+            'greece': '🇬🇷',
+            'albania': '🇦🇱',
+            'kosovo': '🇽🇰',
+            'montenegro': '🇲🇪',
+            'bosnia': '🇧🇦',
+            'croatia': '🇭🇷',
+            'slovenia': '🇸🇮',
+            'romania': '🇷🇴',
+
+            # Western Europe
+            'france': '🇫🇷',
+            'germany': '🇩🇪',
+            'spain': '🇪🇸',
+            'italy': '🇮🇹',
+            'netherlands': '🇳🇱',
+            'uk': '🇬🇧',
+            'united kingdom': '🇬🇧',
+            'england': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+            'belgium': '🇧🇪',
+            'austria': '🇦🇹',
+            'switzerland': '🇨🇭',
+            'portugal': '🇵🇹',
+
+            # Nordic Countries
+            'denmark': '🇩🇰',
+            'sweden': '🇸🇪',
+            'norway': '🇳🇴',
+            'finland': '🇫🇮',
+            'iceland': '🇮🇸',
+
+            # Eastern Europe & CIS
+            'russia': '🇷🇺',
+            'russian federation': '🇷🇺',
+            'ukraine': '🇺🇦',
+            'poland': '🇵🇱',
+            'czech republic': '🇨🇿',
+            'slovakia': '🇸🇰',
+            'hungary': '🇭🇺',
+            'belarus': '🇧🇾',
+            'estonia': '🇪🇪',
+            'latvia': '🇱🇻',
+            'lithuania': '🇱🇹',
+            'kazakhstan': '🇰🇿',
+
+            # Americas
+            'usa': '🇺🇸',
+            'united states': '🇺🇸',
+            'canada': '🇨🇦',
+            'brazil': '🇧🇷',
+            'argentina': '🇦🇷',
+            'chile': '🇨🇱',
+            'mexico': '🇲🇽',
+            'colombia': '🇨🇴',
+            'peru': '🇵🇪',
+
+            # Asia
+            'china': '🇨🇳',
+            'japan': '🇯🇵',
+            'south korea': '🇰🇷',
+            'korea': '🇰🇷',
+            'mongolia': '🇲🇳',
+            'thailand': '🇹🇭',
+            'singapore': '🇸🇬',
+            'malaysia': '🇲🇾',
+            'indonesia': '🇮🇩',
+            'philippines': '🇵🇭',
+            'india': '🇮🇳',
+            'pakistan': '🇵🇰',
+            'bangladesh': '🇧🇩',
+            'vietnam': '🇻🇳',
+
+            # Middle East & Africa
+            'turkey': '🇹🇷',
+            'saudi arabia': '🇸🇦',
+            'israel': '🇮🇱',
+            'iran': '🇮🇷',
+            'uae': '🇦🇪',
+            'egypt': '🇪🇬',
+            'south africa': '🇿🇦',
+            'morocco': '🇲🇦',
+
+            # Oceania
+            'australia': '🇦🇺',
+            'new zealand': '🇳🇿',
+        }
+
+        if self.country:
+            country_lower = self.country.lower().strip()
+            return flag_map.get(country_lower, '🌍')  # Default globe emoji
+        return ''
 
     class Meta:
         ordering = ['name']

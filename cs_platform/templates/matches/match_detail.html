@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ match.team1.name }} vs {{ match.team2.name }} - Match Details{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Match Header -->
+            <div class="card mb-4">
+                <div class="card-header text-center py-4">
+                    <h2 class="mb-3">
+                        <span class="text-primary">{{ match.team1.name }}</span>
+                        <span class="mx-3">vs</span>
+                        <span class="text-success">{{ match.team2.name }}</span>
+                    </h2>
+                    <div class="row justify-content-center">
+                        <div class="col-auto">
+                            <span class="badge bg-primary fs-6 me-2">{{ match.get_map_name_display }}</span>
+                            <span class="badge bg-secondary fs-6 me-2">{{ match.get_match_type_display }}</span>
+                            {% if match.is_finished %}
+                                <span class="badge bg-success fs-6">Finished</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark fs-6">Ongoing</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-5">
+                            <h3 class="text-primary">[{{ match.team1.tag }}] {{ match.team1.name }}</h3>
+                            {% if match.team1.logo %}
+                                <img src="{{ match.team1.logo.url }}" alt="{{ match.team1.name }}"
+                                     class="img-fluid rounded" style="max-height: 80px;">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-2 d-flex align-items-center justify-content-center">
+                            <h1 class="display-3 fw-bold">
+                                {% if match.is_finished %}
+                                    <span class="text-primary">{{ match.team1_score }}</span>
+                                    <small class="text-muted">:</small>
+                                    <span class="text-success">{{ match.team2_score }}</span>
+                                {% else %}
+                                    <span class="text-muted">vs</span>
+                                {% endif %}
+                            </h1>
+                        </div>
+                        <div class="col-md-5">
+                            <h3 class="text-success">[{{ match.team2.tag }}] {{ match.team2.name }}</h3>
+                            {% if match.team2.logo %}
+                                <img src="{{ match.team2.logo.url }}" alt="{{ match.team2.name }}"
+                                     class="img-fluid rounded" style="max-height: 80px;">
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <p class="text-muted mb-2">
+                            <i class="bi bi-calendar3"></i> {{ match.match_date|date:"F d, Y \a\t H:i" }}
+                        </p>
+                        {% if match.duration_minutes %}
+                            <p class="text-muted">
+                                <i class="bi bi-clock"></i> Duration: {{ match.duration_minutes }} minutes
+                            </p>
+                        {% endif %}
+                        {% if match.winner %}
+                            <div class="alert alert-success d-inline-block">
+                                <i class="bi bi-trophy-fill"></i> Winner: <strong>{{ match.winner.name }}</strong>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Match Actions -->
+            {% if user.is_authenticated and not match.is_finished %}
+                {% if user in match.team1.memberships.all.player or user in match.team2.memberships.all.player %}
+                <div class="text-center mb-4">
+                    <a href="{% url 'match_result' match.pk %}" class="btn btn-primary">
+                        <i class="bi bi-clipboard-check"></i> Submit Result
+                    </a>
+                </div>
+                {% endif %}
+            {% endif %}
+
+            <!-- Player Statistics -->
+            {% if player_stats %}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-people-fill text-primary"></i> {{ match.team1.name }} Stats</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for stat in team1_stats %}
+                            <div class="d-flex justify-content-between align-items-center mb-2 p-2 rounded"
+                                 style="background: rgba(0, 212, 255, 0.1);">
+                                <div>
+                                    <strong>{{ stat.player.username }}</strong>
+                                    {% if stat.player.rank %}
+                                        <span class="rank-badge ms-1">{{ stat.player.get_rank_display }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success">{{ stat.kills }}K</span>
+                                    <span class="badge bg-danger">{{ stat.deaths }}D</span>
+                                    <span class="badge bg-info">{{ stat.assists }}A</span>
+                                    <small class="text-muted ms-2">K/D: {{ stat.kd_ratio }}</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-people-fill text-success"></i> {{ match.team2.name }} Stats</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for stat in team2_stats %}
+                            <div class="d-flex justify-content-between align-items-center mb-2 p-2 rounded"
+                                 style="background: rgba(0, 255, 136, 0.1);">
+                                <div>
+                                    <strong>{{ stat.player.username }}</strong>
+                                    {% if stat.player.rank %}
+                                        <span class="rank-badge ms-1">{{ stat.player.get_rank_display }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success">{{ stat.kills }}K</span>
+                                    <span class="badge bg-danger">{{ stat.deaths }}D</span>
+                                    <span class="badge bg-info">{{ stat.assists }}A</span>
+                                    <small class="text-muted ms-2">K/D: {{ stat.kd_ratio }}</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Back Button -->
+            <div class="text-center mt-4">
+                <a href="{% url 'match_list' %}" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left"></i> Back to Matches
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

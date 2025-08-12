@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}Map Statistics - CS Platform{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-map me-2"></i>Map Statistics</h1>
+            </div>
+
+            <!-- Map Filter -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Filter by Map</label>
+                            <select class="form-control" onchange="window.location.href='?map=' + this.value">
+                                <option value="all" {% if current_map == 'all' %}selected{% endif %}>All Maps</option>
+                                {% for key, value in map_choices %}
+                                    <option value="{{ key }}" {% if current_map == key %}selected{% endif %}>
+                                        {{ value }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <a href="{% url 'map_stats' %}" class="btn btn-outline-light">
+                                <i class="bi bi-arrow-clockwise"></i> Reset Filter
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popular Maps Overview -->
+            {% if popular_maps %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="bi bi-bar-chart text-success me-2"></i>Most Popular Maps</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for map in popular_maps %}
+                        <div class="col-md-3 col-lg-2">
+                            <div class="text-center p-3 rounded" style="background: rgba(0, 255, 136, 0.1);">
+                                <i class="bi bi-map display-6 text-success"></i>
+                                <h6 class="mt-2">{{ map.map_name|title }}</h6>
+                                <p class="mb-0 fw-bold text-success">{{ map.total_matches }} matches</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Player Map Stats -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-list-ul me-2"></i>Player Map Statistics</h5>
+                </div>
+                <div class="card-body">
+                    {% if map_stats %}
+                        <div class="table-responsive">
+                            <table class="table table-dark table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Player</th>
+                                        <th>Map</th>
+                                        <th>Matches Played</th>
+                                        <th>Matches Won</th>
+                                        <th>Win Rate</th>
+                                        <th>Total Kills</th>
+                                        <th>Total Deaths</th>
+                                        <th>K/D Ratio</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for stat in map_stats %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-primary">#{{ forloop.counter }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if stat.player.avatar %}
+                                                    <img src="{{ stat.player.avatar.url }}" alt="{{ stat.player.username }}"
+                                                         class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                                                {% endif %}
+                                                <div>
+                                                    <strong>{{ stat.player.username }}</strong>
+                                                    {% if stat.player.rank %}
+                                                        <br><small class="rank-badge">{{ stat.player.get_rank_display }}</small>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success">{{ stat.get_map_name_display }}</span>
+                                        </td>
+                                        <td>
+                                            <strong class="text-primary">{{ stat.matches_played }}</strong>
+                                        </td>
+                                        <td>
+                                            <strong class="text-success">{{ stat.matches_won }}</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-warning text-dark">{{ stat.win_rate }}%</span>
+                                        </td>
+                                        <td>
+                                            <strong class="text-danger">{{ stat.total_kills }}</strong>
+                                        </td>
+                                        <td>{{ stat.total_deaths }}</td>
+                                        <td>
+                                            <span class="badge bg-info">{{ stat.kd_ratio }}</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-map display-1 text-muted"></i>
+                            <h3 class="mt-3 text-muted">No map statistics found</h3>
+                            <p class="text-muted">Play some matches to see map statistics here!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if current_map != 'all' %}&map={{ current_map }}{% endif %}">First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if current_map != 'all' %}&map={{ current_map }}{% endif %}">Previous</a>
+                        </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if current_map != 'all' %}&map={{ current_map }}{% endif %}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if current_map != 'all' %}&map={{ current_map }}{% endif %}">Last</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

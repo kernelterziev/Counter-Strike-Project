@@ -8,4 +8,5 @@ urlpatterns = [
     path('<int:pk>/edit/', views.TeamUpdateView.as_view(), name='team_edit'),
     path('<int:pk>/roster/', views.team_roster, name='team_roster'),
     path('<int:pk>/join/', views.join_team, name='join_team'),
+    path('<int:pk>/delete/', views.TeamDeleteView.as_view(), name='team_delete'),
 ]

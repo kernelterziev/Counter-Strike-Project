@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage {{ team.name }} Roster{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-people-fill me-2"></i>Manage Roster - {{ team.name }}</h1>
+                <a href="{% url 'team_detail' team.pk %}" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Team
+                </a>
+            </div>
+
+            <!-- Team Info -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 text-center">
+                            {% if team.logo %}
+                                <img src="{{ team.logo.url }}" alt="{{ team.name }}"
+                                     class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                            {% else %}
+                                <i class="bi bi-shield-fill display-4 text-primary"></i>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-10">
+                            <h4 class="text-white">[{{ team.tag }}] {{ team.name }}</h4>
+                            <p class="text-muted mb-2">
+                                <i class="bi bi-people me-1"></i>{{ members.count }} members
+                                {% if team.country %}
+                                    • <span class="flag-emoji me-1">{{ team.get_country_flag }}</span>{{ team.country }}
+                                {% endif %}
+                            </p>
+                            <span class="badge bg-warning text-dark">
+                                <i class="bi bi-star me-1"></i>Captain: {{ team.captain.username }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Members -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="text-white"><i class="bi bi-list-ul me-2"></i>Current Roster</h5>
+                </div>
+                <div class="card-body">
+                    {% if members %}
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Player</th>
+                                        <th>Role</th>
+                                        <th>Rank</th>
+                                        <th>Joined</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for membership in members %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if membership.player.avatar %}
+                                                    <img src="{{ membership.player.avatar.url }}" alt="{{ membership.player.username }}"
+                                                         class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                {% else %}
+                                                    <i class="bi bi-person-circle me-2" style="font-size: 2rem;"></i>
+                                                {% endif %}
+                                                <div>
+                                                    <strong class="text-white">{{ membership.player.username }}</strong>
+                                                    {% if membership.player == team.captain %}
+                                                        <i class="bi bi-star-fill text-warning ms-1"></i>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ membership.get_role_display }}</span>
+                                        </td>
+                                        <td>
+                                            {% if membership.player.rank %}
+                                                <span class="rank-badge">{{ membership.player.get_rank_display }}</span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">{{ membership.joined_date|date:"M d, Y" }}</small>
+                                        </td>
+                                        <td>
+                                            {% if membership.is_active %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if membership.player != team.captain %}
+                                                <button class="btn btn-outline-danger btn-sm"
+                                                        onclick="kickPlayer('{{ membership.player.username }}', {{ membership.pk }})">
+                                                    <i class="bi bi-person-dash"></i> Kick
+                                                </button>
+                                            {% else %}
+                                                <span class="text-warning small">Captain</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-people display-4 text-muted"></i>
+                            <h5 class="text-muted mt-2">No members in roster</h5>
+                            <p class="text-muted">Invite players to join your team!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Team Management Actions -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="text-white"><i class="bi bi-gear me-2"></i>Team Management</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="card bg-transparent border-primary">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-person-plus display-4 text-primary mb-2"></i>
+                                    <h6 class="text-white">Invite Players</h6>
+                                    <p class="text-muted small">Send invitations to join your team</p>
+                                    <button class="btn btn-primary btn-sm" disabled>
+                                        <i class="bi bi-envelope me-1"></i>Coming Soon
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-transparent border-success">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-trophy display-4 text-success mb-2"></i>
+                                    <h6 class="text-white">Team Stats</h6>
+                                    <p class="text-muted small">View detailed team performance</p>
+                                    <button class="btn btn-success btn-sm" disabled>
+                                        <i class="bi bi-graph-up me-1"></i>Coming Soon
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-transparent border-warning">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-calendar-event display-4 text-warning mb-2"></i>
+                                    <h6 class="text-white">Schedule Match</h6>
+                                    <p class="text-muted small">Create matches for your team</p>
+                                    <a href="{% url 'match_create' %}" class="btn btn-warning btn-sm text-dark">
+                                        <i class="bi bi-plus me-1"></i>Create Match
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Kick Player Modal -->
+<div class="modal fade" id="kickModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background: var(--secondary-bg); border: 1px solid var(--border-color);">
+            <div class="modal-header">
+                <h5 class="modal-title text-warning">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Kick Player
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-white">Are you sure you want to kick <strong id="playerName"></strong> from the team?</p>
+                <p class="text-muted">This player will be removed from the team roster.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="" id="kickForm" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-person-dash me-2"></i>Kick Player
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function kickPlayer(playerName, membershipId) {
+    document.getElementById('playerName').textContent = playerName;
+    document.getElementById('kickForm').action = `/teams/{{ team.pk }}/kick/${membershipId}/`;
+
+    var kickModal = new bootstrap.Modal(document.getElementById('kickModal'));
+    kickModal.show();
+}
+</script>
+{% endblock %}

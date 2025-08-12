@@ -113,10 +113,10 @@
                                 <span class="rank-badge">{{ player.get_rank_display }}</span>
                             {% endif %}
                             {% if player.country %}
-                                <p class="text-muted small mt-1">
-                                    <i class="bi bi-geo-alt"></i> {{ player.country }}
-                                </p>
-                            {% endif %}
+    <p class="text-muted small mt-1">
+        <span class="me-1">{{ player.get_country_flag }}</span>{{ player.country }}
+    </p>
+{% endif %}
                             <a href="{% url 'player_detail' player.pk %}" class="btn btn-sm btn-outline-light mt-2">
                                 View Profile
                             </a>
