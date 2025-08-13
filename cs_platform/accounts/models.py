@@ -18,6 +18,9 @@ class CustomUser(AbstractUser):
         ('global_elite', 'Global Elite'),
     ]
 
+    def get_rank_display_name(self):
+        return dict(self.RANK_CHOICES).get(self.rank, self.rank)
+
     def get_country_flag(self):
         """Return flag emoji for country"""
         flag_map = {

@@ -6,6 +6,7 @@ urlpatterns = [
     path('maps/', views.MapStatsView.as_view(), name='map_stats'),
     path('leaderboard/', views.leaderboard, name='leaderboard'),
 
+
     # Async views
     path('async/dashboard/', async_views.async_dashboard, name='async_dashboard'),
     path('async/leaderboard-data/', async_views.async_leaderboard_data, name='async_leaderboard_data'),

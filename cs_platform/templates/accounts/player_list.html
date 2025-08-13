@@ -24,10 +24,12 @@
                     <div class="col-md-6 col-lg-4 col-xl-3">
                         <div class="card h-100 text-center border-warning">
                             <div class="card-body">
-                                <!-- Auto Avatar with Robohash -->
-                                <img src="https://robohash.org/{{ player.username }}.png?size=80x80"
-                                     alt="{{ player.username }}"
-                                     class="rounded-circle mb-3" style="width: 80px; height: 80px;">
+                                {% if player.avatar %}
+    <img src="{{ player.avatar.url }}" alt="{{ player.username }}"
+         class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+{% else %}
+    <i class="bi bi-person-circle display-1 mb-3"></i>
+{% endif %}
 
                                 <h5 class="card-title text-warning">{{ player.username }}</h5>
 
