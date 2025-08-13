@@ -481,6 +481,21 @@
         {% endblock %}
     </main>
 
+    <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+        Stats
+    </a>
+    <ul class="dropdown-menu dropdown-menu-dark">
+        <li><a class="dropdown-item" href="{% url 'leaderboard' %}">Leaderboard</a></li>
+        <li><a class="dropdown-item" href="{% url 'weapon_stats' %}">Weapon Stats</a></li>
+        <li><a class="dropdown-item" href="{% url 'map_stats' %}">Map Stats</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="{% url 'async_dashboard' %}">
+            <i class="bi bi-lightning-charge me-1"></i>Async Dashboard
+        </a></li>
+    </ul>
+</li>
+
     <!-- Footer -->
     <footer class="footer py-4">
         <div class="container">
