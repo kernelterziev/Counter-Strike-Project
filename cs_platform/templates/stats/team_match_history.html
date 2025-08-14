@@ -1,0 +1,383 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ team.name }} - Match History - CS Platform{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <!-- Team Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h1 class="display-4 mb-3">
+                        {% if team.get_country_flag %}{{ team.get_country_flag }}{% endif %}
+                        [{{ team.tag }}] {{ team.name }}
+                        {% if team.is_professional %}
+                            <span class="badge bg-warning text-dark ms-2">PRO</span>
+                        {% endif %}
+                    </h1>
+                    <p class="text-muted">{{ team.description|default:"Professional esports team competing at the highest level." }}</p>
+
+                    <!-- Team Quick Stats -->
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <div class="stats-badge">
+                                <div class="h3 mb-1">{{ team_stats.total_matches }}</div>
+                                <small>Recent Matches</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-badge">
+                                <div class="h3 mb-1 text-success">{{ team_stats.wins }}</div>
+                                <small>Wins</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-badge">
+                                <div class="h3 mb-1
+                                    {% if team_stats.win_rate >= 60 %}text-success
+                                    {% elif team_stats.win_rate >= 45 %}text-warning
+                                    {% else %}text-danger{% endif %}">
+                                    {{ team_stats.win_rate }}%
+                                </div>
+                                <small>Win Rate</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-badge">
+                                <div class="h3 mb-1
+                                    {% if team_stats.round_diff > 0 %}text-success
+                                    {% elif team_stats.round_diff == 0 %}text-warning
+                                    {% else %}text-danger{% endif %}">
+                                    {% if team_stats.round_diff > 0 %}+{% endif %}{{ team_stats.round_diff }}
+                                </div>
+                                <small>Round Diff</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Matches Header -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <h2><i class="bi bi-clock-history me-2"></i>Recent Match History</h2>
+            <p class="text-muted">Last 5 matches with detailed performance breakdown</p>
+        </div>
+    </div>
+
+    <!-- Matches List -->
+    <div class="row">
+        {% for match in matches %}
+        <div class="col-12 mb-4">
+            <div class="card match-card {% if match.winner == team %}match-win{% else %}match-loss{% endif %}">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="match-teams d-flex align-items-center">
+                                {% if match.team1 == team %}
+                                    <!-- Team is team1 -->
+                                    <div class="team-info me-4">
+                                        <h5 class="mb-0 text-primary">
+                                            {% if team.get_country_flag %}{{ team.get_country_flag }}{% endif %}
+                                            [{{ team.tag }}] {{ team.name }}
+                                        </h5>
+                                    </div>
+                                    <div class="score-display mx-4">
+                                        <span class="score-number {% if match.team1_score > match.team2_score %}text-success{% else %}text-danger{% endif %}">
+                                            {{ match.team1_score }}
+                                        </span>
+                                        <span class="score-separator mx-2">:</span>
+                                        <span class="score-number {% if match.team2_score > match.team1_score %}text-success{% else %}text-danger{% endif %}">
+                                            {{ match.team2_score }}
+                                        </span>
+                                    </div>
+                                    <div class="team-info ms-4">
+                                        <h5 class="mb-0">
+                                            🌍 [{{ match.team2.tag }}] {{ match.team2.name }}
+                                        </h5>
+                                    </div>
+                                {% else %}
+                                    <!-- Team is team2 -->
+                                    <div class="team-info me-4">
+                                        <h5 class="mb-0">
+                                            🌍 [{{ match.team1.tag }}] {{ match.team1.name }}
+                                        </h5>
+                                    </div>
+                                    <div class="score-display mx-4">
+                                        <span class="score-number {% if match.team1_score > match.team2_score %}text-success{% else %}text-danger{% endif %}">
+                                            {{ match.team1_score }}
+                                        </span>
+                                        <span class="score-separator mx-2">:</span>
+                                        <span class="score-number {% if match.team2_score > match.team1_score %}text-success{% else %}text-danger{% endif %}">
+                                            {{ match.team2_score }}
+                                        </span>
+                                    </div>
+                                    <div class="team-info ms-4">
+                                        <h5 class="mb-0 text-primary">
+                                            {% if team.get_country_flag %}{{ team.get_country_flag }}{% endif %}
+                                            [{{ team.tag }}] {{ team.name }}
+                                        </h5>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="match-meta">
+                                <div class="match-result mb-1">
+                                    {% if match.winner == team %}
+                                        <span class="badge bg-success fs-6">VICTORY</span>
+                                    {% else %}
+                                        <span class="badge bg-danger fs-6">DEFEAT</span>
+                                    {% endif %}
+                                </div>
+                                <div class="match-date text-muted">
+                                    <i class="bi bi-calendar3 me-1"></i>{{ match.match_date|date:"M d, Y" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="match-details">
+                                <div class="detail-item">
+                                    <i class="bi bi-geo-alt-fill me-2 text-warning"></i>
+                                    <strong>Map:</strong>
+                                    <span class="text-primary">{{ match.get_map_name_display|default:match.map_name|title }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="bi bi-trophy-fill me-2 text-warning"></i>
+                                    <strong>Type:</strong>
+                                    <span class="text-capitalize">{{ match.get_match_type_display|default:match.match_type }}</span>
+                                </div>
+                                {% if match.duration_minutes %}
+                                <div class="detail-item">
+                                    <i class="bi bi-stopwatch me-2 text-info"></i>
+                                    <strong>Duration:</strong>
+                                    <span>{{ match.duration_minutes }} minutes</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="performance-summary">
+                                <h6 class="text-muted mb-2">
+                                    <i class="bi bi-bar-chart me-2"></i>Performance Highlights
+                                </h6>
+                                {% if match.winner == team %}
+                                    <div class="highlight-item text-success">
+                                        <i class="bi bi-check-circle me-2"></i>
+                                        Dominated with {{ match.team1_score|add:match.team2_score }} total rounds
+                                    </div>
+                                    <div class="highlight-item text-info">
+                                        <i class="bi bi-star me-2"></i>
+                                        Strong map control and execution
+                                    </div>
+                                {% else %}
+                                    <div class="highlight-item text-warning">
+                                        <i class="bi bi-exclamation-triangle me-2"></i>
+                                        Close contest with {{ match.team1_score|add:match.team2_score }} total rounds
+                                    </div>
+                                    <div class="highlight-item text-muted">
+                                        <i class="bi bi-arrow-up-circle me-2"></i>
+                                        Areas for improvement identified
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mock Player Performance (if this is a professional match) -->
+                    {% if team.is_professional %}
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="player-performance">
+                                <h6 class="text-muted mb-3">
+                                    <i class="bi bi-people me-2"></i>Top Team Performers
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="player-stat-card">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="fw-bold">s1mple</span>
+                                                <span class="text-success">24-16 (1.50 K/D)</span>
+                                            </div>
+                                            <small class="text-muted">Star Player</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="player-stat-card">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="fw-bold">ZywOo</span>
+                                                <span class="text-warning">19-14 (1.36 K/D)</span>
+                                            </div>
+                                            <small class="text-muted">AWPer</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="player-stat-card">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="fw-bold">sh1ro</span>
+                                                <span class="text-info">16-12 (1.33 K/D)</span>
+                                            </div>
+                                            <small class="text-muted">IGL</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if not match.is_mock %}
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="bi bi-database me-1"></i>Live Match Data
+                        </small>
+                        <a href="{% url 'match_detail' match.pk %}" class="btn btn-outline-light btn-sm">
+                            <i class="bi bi-eye me-1"></i>View Details
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card-footer">
+                    <small class="text-muted">
+                        <i class="bi bi-cpu me-1"></i>Enhanced Demo Data
+                    </small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="bi bi-inbox display-1 text-muted mb-3"></i>
+                    <h4>No Match History Available</h4>
+                    <p class="text-muted">This team hasn't played any recent matches.</p>
+                    <a href="{% url 'match_create' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>Schedule a Match
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Navigation -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a href="{% url 'team_detail' team.pk %}" class="btn btn-outline-light me-3">
+                <i class="bi bi-arrow-left me-2"></i>Back to Team
+            </a>
+            <a href="{% url 'player_comparison' %}" class="btn btn-primary">
+                <i class="bi bi-person-bounding-box me-2"></i>Compare Players
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.match-card {
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--border-color);
+}
+
+.match-card.match-win {
+    border-left-color: var(--success-green);
+    background: linear-gradient(145deg, var(--secondary-bg), rgba(0, 255, 136, 0.05));
+}
+
+.match-card.match-loss {
+    border-left-color: var(--danger-red);
+    background: linear-gradient(145deg, var(--secondary-bg), rgba(255, 51, 102, 0.05));
+}
+
+.match-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.15);
+}
+
+.score-display {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.score-number {
+    font-family: 'Courier New', monospace;
+}
+
+.score-separator {
+    color: var(--text-muted);
+}
+
+.detail-item {
+    margin-bottom: 0.5rem;
+    padding: 0.25rem 0;
+}
+
+.highlight-item {
+    margin-bottom: 0.5rem;
+    padding: 0.25rem 0;
+    font-size: 0.9rem;
+}
+
+.player-stat-card {
+    background: var(--accent-bg);
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.player-stat-card:hover {
+    background: var(--secondary-bg);
+    border-color: var(--primary-blue);
+}
+
+.team-info h5 {
+    font-size: 1.1rem;
+    line-height: 1.2;
+}
+
+.match-meta {
+    text-align: right;
+}
+
+.performance-summary h6 {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .match-teams {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .score-display {
+        margin: 1rem 0;
+        font-size: 1.5rem;
+    }
+
+    .team-info {
+        margin: 0.5rem 0 !important;
+    }
+
+    .match-meta {
+        text-align: center;
+        margin-top: 1rem;
+    }
+}
+</style>
+{% endblock %}

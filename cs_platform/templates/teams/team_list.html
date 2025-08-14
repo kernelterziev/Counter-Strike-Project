@@ -7,22 +7,23 @@
     <div class="row">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="text-white"><i class="bi bi-shield-fill me-2"></i>Teams</h1>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'team_create' %}" class="btn btn-primary">
-                        <i class="bi bi-plus-circle me-2"></i>Create Team
-                    </a>
-                {% endif %}
-            </div>
+<h1 class="text-white"><i class="bi bi-shield-fill me-2"></i>Teams</h1>
+{% if user.is_authenticated %}
+    <a href="{% url 'create_team_roster' %}" class="btn btn-primary">
+        <i class="bi bi-shield-plus me-2"></i>Create Team
+    </a>
+{% endif %}
+</div>
 
             <!-- Professional Teams Section -->
-            {% if pro_teams %}
+            {% if professional_teams > 0 %}
             <div class="mb-5">
                 <h2 class="text-center mb-4">
                     <i class="bi bi-trophy-fill text-warning me-2"></i>Professional Teams
                 </h2>
                 <div class="row g-4">
-                    {% for team in pro_teams %}
+                    {% for team in teams %}
+                    {% if team.is_professional %}
                     <div class="col-md-6 col-lg-4">
                         <div class="card h-100 border-warning">
                             <div class="card-body text-center">
@@ -55,7 +56,7 @@
                                         <i class="bi bi-currency-dollar"></i> ${{ team.prize_money|floatformat:0 }}
                                     </span>
                                     <span class="badge bg-primary">
-                                        <i class="bi bi-people"></i> {{ team.memberships.count }} players
+                                        <i class="bi bi-people"></i> {{ team.member_count }} players
                                     </span>
                                 </div>
 
@@ -65,6 +66,7 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
                     {% endfor %}
                 </div>
             </div>
@@ -79,6 +81,7 @@
             <!-- Community Teams Grid -->
             <div class="row g-4">
                 {% for team in teams %}
+                {% if not team.is_professional %}
                 <div class="col-md-6 col-lg-4">
                     <div class="card h-100">
                         <div class="card-body text-center">
@@ -99,7 +102,7 @@
 
                             <div class="mb-3">
                                 <span class="badge bg-primary me-2">
-                                    <i class="bi bi-people"></i> {{ team.memberships.count }} members
+                                    <i class="bi bi-people"></i> {{ team.member_count }} members
                                 </span>
                                 {% if team.captain %}
                                     <span class="badge bg-warning text-dark">
@@ -123,13 +126,14 @@
                                 <i class="bi bi-eye"></i> View Team
                             </a>
                             {% if user.is_authenticated %}
-                                <a href="{% url 'join_team' team.pk %}" class="btn btn-success btn-sm">
+                                <button class="btn btn-success btn-sm" onclick="alert('Join Team feature coming soon!')">
                                     <i class="bi bi-plus"></i> Join
-                                </a>
+                                </button>
                             {% endif %}
                         </div>
                     </div>
                 </div>
+                {% endif %}
                 {% empty %}
                 <div class="col-12">
                     <div class="text-center py-5">
@@ -137,9 +141,9 @@
                         <h3 class="mt-3 text-muted">No community teams found</h3>
                         <p class="text-muted">Be the first to create a team!</p>
                         {% if user.is_authenticated %}
-                            <a href="{% url 'team_create' %}" class="btn btn-primary">
+                            <button class="btn btn-primary" onclick="alert('Create Team feature coming soon!')">
                                 <i class="bi bi-plus-circle me-2"></i>Create Team
-                            </a>
+                            </button>
                         {% endif %}
                     </div>
                 </div>
@@ -171,4 +175,37 @@
         </div>
     </div>
 </div>
+
+<style>
+/* Добавяме малко flash за "coming soon" бутоните */
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.15);
+}
+
+.border-warning {
+    border-color: var(--warning-yellow) !important;
+    box-shadow: 0 0 20px rgba(255, 204, 0, 0.1);
+}
+
+.flag-emoji {
+    font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
+    font-size: 1rem;
+}
+</style>
+
+<script>
+function showComingSoon(feature) {
+    alert(`${feature} feature is coming soon! 🚀\n\nFor now, enjoy the match history and player comparison tools! 😎`);
+}
+</script>
 {% endblock %}

@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Team - CS Platform{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header text-center py-4">
+                    <h2><i class="bi bi-shield-plus text-primary me-2"></i>Create New Team</h2>
+                    <p class="text-muted mb-0">Build your 5-man CS team roster</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" id="teamForm">
+                        {% csrf_token %}
+
+                        <!-- Team Basic Info -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-shield me-1"></i>Team Name
+                                </label>
+                                <input type="text" name="team_name" class="form-control"
+                                       placeholder="Enter team name..." required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-tag me-1"></i>Team Tag
+                                </label>
+                                <input type="text" name="team_tag" class="form-control"
+                                       placeholder="e.g. AST, NAVI..." maxlength="5" required>
+                                <small class="form-text text-muted">Max 5 characters</small>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Team Roster Section -->
+                        <h4 class="mb-4">
+                            <i class="bi bi-people-fill text-warning me-2"></i>Team Roster
+                            <small class="text-muted">(5 players required)</small>
+                        </h4>
+
+                        <div class="row g-4">
+                            <!-- Position 1: Captain/IGL -->
+                            <div class="col-md-6">
+                                <div class="player-slot p-3 rounded" style="background: rgba(255, 215, 0, 0.1); border: 2px solid #ffd700;">
+                                    <label class="form-label fw-bold text-warning">
+                                        <i class="bi bi-star-fill me-2"></i>Captain / IGL
+                                    </label>
+                                    <select name="captain" class="form-control player-select" required>
+                                        <option value="">Select Captain...</option>
+                                        {% for player in players %}
+                                        <option value="{{ player.id }}">
+                                            {{ player.username }}
+                                            {% if player.is_professional %}(Pro){% endif %}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">Team leader & in-game leader</small>
+                                </div>
+                            </div>
+
+                            <!-- Position 2: AWPer -->
+                            <div class="col-md-6">
+                                <div class="player-slot p-3 rounded" style="background: rgba(220, 53, 69, 0.1); border: 2px solid #dc3545;">
+                                    <label class="form-label fw-bold text-danger">
+                                        <i class="bi bi-crosshair me-2"></i>AWPer
+                                    </label>
+                                    <select name="awper" class="form-control player-select" required>
+                                        <option value="">Select AWPer...</option>
+                                        {% for player in players %}
+                                        <option value="{{ player.id }}">
+                                            {{ player.username }}
+                                            {% if player.is_professional %}(Pro){% endif %}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">Primary sniper</small>
+                                </div>
+                            </div>
+
+                            <!-- Position 3: Entry Fragger -->
+                            <div class="col-md-6">
+                                <div class="player-slot p-3 rounded" style="background: rgba(255, 107, 53, 0.1); border: 2px solid #ff6b35;">
+                                    <label class="form-label fw-bold" style="color: #ff6b35;">
+                                        <i class="bi bi-lightning-charge me-2"></i>Entry Fragger
+                                    </label>
+                                    <select name="entry_fragger" class="form-control player-select" required>
+                                        <option value="">Select Entry Fragger...</option>
+                                        {% for player in players %}
+                                        <option value="{{ player.id }}">
+                                            {{ player.username }}
+                                            {% if player.is_professional %}(Pro){% endif %}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">First into the site</small>
+                                </div>
+                            </div>
+
+                            <!-- Position 4: Support -->
+                            <div class="col-md-6">
+                                <div class="player-slot p-3 rounded" style="background: rgba(0, 212, 255, 0.1); border: 2px solid #00d4ff;">
+                                    <label class="form-label fw-bold text-info">
+                                        <i class="bi bi-shield-check me-2"></i>Support Player
+                                    </label>
+                                    <select name="support" class="form-control player-select" required>
+                                        <option value="">Select Support...</option>
+                                        {% for player in players %}
+                                        <option value="{{ player.id }}">
+                                            {{ player.username }}
+                                            {% if player.is_professional %}(Pro){% endif %}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">Utility & team support</small>
+                                </div>
+                            </div>
+
+                            <!-- Position 5: Rifler -->
+                            <div class="col-md-6 mx-auto">
+                                <div class="player-slot p-3 rounded" style="background: rgba(0, 255, 136, 0.1); border: 2px solid #00ff88;">
+                                    <label class="form-label fw-bold text-success">
+                                        <i class="bi bi-bullseye me-2"></i>Rifler
+                                    </label>
+                                    <select name="rifler" class="form-control player-select" required>
+                                        <option value="">Select Rifler...</option>
+                                        {% for player in players %}
+                                        <option value="{{ player.id }}">
+                                            {{ player.username }}
+                                            {% if player.is_professional %}(Pro){% endif %}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">Rifle specialist</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Team Type -->
+                        <hr class="my-4">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Team Type</label>
+                                <select name="team_type" class="form-control" required>
+                                    <option value="">Select team type...</option>
+                                    <option value="professional">Professional Team</option>
+                                    <option value="community">Community Team</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Country</label>
+                                <select name="country" class="form-control">
+                                    <option value="">Select country...</option>
+                                    <option value="Denmark">🇩🇰 Denmark</option>
+                                    <option value="Ukraine">🇺🇦 Ukraine</option>
+                                    <option value="France">🇫🇷 France</option>
+                                    <option value="USA">🇺🇸 USA</option>
+                                    <option value="Brazil">🇧🇷 Brazil</option>
+                                    <option value="Russia">🇷🇺 Russia</option>
+                                    <option value="Sweden">🇸🇪 Sweden</option>
+                                    <option value="Germany">🇩🇪 Germany</option>
+                                    <option value="Bulgaria">🇧🇬 Bulgaria</option>
+                                    <option value="Other">🌍 Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Validation Alert -->
+                        <div id="validationAlert" class="alert alert-warning" style="display: none;">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <span id="validationMessage"></span>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg me-3" id="createTeamBtn">
+                                <i class="bi bi-shield-plus me-2"></i>Create Team
+                            </button>
+                            <a href="{% url 'team_list' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-arrow-left me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Validation -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const playerSelects = document.querySelectorAll('.player-select');
+    const createTeamBtn = document.getElementById('createTeamBtn');
+    const validationAlert = document.getElementById('validationAlert');
+    const validationMessage = document.getElementById('validationMessage');
+
+    // Validate player selection
+    function validatePlayers() {
+        const selectedPlayers = [];
+        const duplicates = [];
+        let isValid = true;
+
+        // Check for duplicates
+        playerSelects.forEach(select => {
+            const value = select.value;
+            if (value) {
+                if (selectedPlayers.includes(value)) {
+                    duplicates.push(select.options[select.selectedIndex].text);
+                    isValid = false;
+                } else {
+                    selectedPlayers.push(value);
+                }
+            }
+        });
+
+        // Check if all positions filled
+        const emptyPositions = Array.from(playerSelects).filter(select => !select.value).length;
+
+        if (duplicates.length > 0) {
+            validationAlert.style.display = 'block';
+            validationMessage.textContent = `Duplicate player selected: ${duplicates[0]}`;
+            createTeamBtn.disabled = true;
+        } else if (emptyPositions > 0) {
+            validationAlert.style.display = 'block';
+            validationMessage.textContent = `Please select all 5 players (${emptyPositions} position${emptyPositions > 1 ? 's' : ''} remaining)`;
+            createTeamBtn.disabled = true;
+        } else {
+            validationAlert.style.display = 'none';
+            createTeamBtn.disabled = false;
+        }
+
+        return isValid && emptyPositions === 0;
+    }
+
+    // Add event listeners to all player selects
+    playerSelects.forEach(select => {
+        select.addEventListener('change', validatePlayers);
+    });
+
+    // Form submission validation
+    document.getElementById('teamForm').addEventListener('submit', function(e) {
+        if (!validatePlayers()) {
+            e.preventDefault();
+            validationAlert.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+
+    // Initial validation
+    validatePlayers();
+});
+</script>
+
+<style>
+.player-slot {
+    transition: all 0.3s ease;
+    min-height: 120px;
+}
+
+.player-slot:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.player-select:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 212, 255, 0.25);
+    border-color: #00d4ff;
+}
+
+.form-control:invalid {
+    border-color: #dc3545;
+}
+
+.form-control:valid {
+    border-color: #00ff88;
+}
+</style>
+
+{% endblock %}

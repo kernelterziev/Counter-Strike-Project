@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Login - CS Platform{% endblock %}
 
@@ -6,44 +7,287 @@
 <div class="container mt-5 pt-4">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-4">
-            <div class="card">
+            <!-- Login Card -->
+            <div class="card login-card">
                 <div class="card-header text-center py-4">
-                    <h3><i class="bi bi-box-arrow-in-right me-2"></i>Welcome Back</h3>
-                    <p class="text-muted mb-0">Login to your CS Platform account</p>
+                    <div class="login-icon mb-3">
+                        <i class="bi bi-person-circle display-3 text-primary"></i>
+                    </div>
+                    <h3 class="mb-0">
+                        <i class="bi bi-controller me-2"></i>Player Login
+                    </h3>
+                    <p class="text-muted mt-2">Enter the battlefield!</p>
                 </div>
+
                 <div class="card-body p-4">
+                    <!-- Login Form -->
                     <form method="post">
                         {% csrf_token %}
 
+                        <!-- Username Field -->
                         <div class="mb-3">
-                            <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
-                            <input type="text" class="form-control" name="username" required>
+                            <label for="{{ form.username.id_for_label }}" class="form-label">
+                                <i class="bi bi-person-badge me-2"></i>Username
+                            </label>
+                            <input type="text"
+                                   class="form-control gaming-input"
+                                   name="{{ form.username.name }}"
+                                   id="{{ form.username.id_for_label }}"
+                                   placeholder="Enter your gaming alias"
+                                   required>
+                            {% if form.username.errors %}
+                                <div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>
+                            {% endif %}
                         </div>
 
+                        <!-- Password Field -->
                         <div class="mb-4">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" name="password" required>
+                            <label for="{{ form.password.id_for_label }}" class="form-label">
+                                <i class="bi bi-shield-lock me-2"></i>Password
+                            </label>
+                            <input type="password"
+                                   class="form-control gaming-input"
+                                   name="{{ form.password.name }}"
+                                   id="{{ form.password.id_for_label }}"
+                                   placeholder="Enter your secret key"
+                                   required>
+                            {% if form.password.errors %}
+                                <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
+                            {% endif %}
                         </div>
 
-                        {% if form.errors %}
+                        <!-- Form Errors -->
+                        {% if form.non_field_errors %}
                             <div class="alert alert-danger">
-                                Invalid username or password. Please try again.
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                {{ form.non_field_errors.0 }}
                             </div>
                         {% endif %}
 
-                        <button type="submit" class="btn btn-primary w-100 mb-3">
-                            <i class="bi bi-check-circle me-2"></i>Login
-                        </button>
+                        <!-- Login Button -->
+                        <div class="d-grid gap-2 mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg login-btn">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Login & Play
+                            </button>
+                        </div>
 
+                        <!-- Register Link -->
                         <div class="text-center">
-                            <p class="text-muted">Don't have an account?
-                                <a href="{% url 'register' %}" class="text-decoration-none">Register here</a>
+                            <p class="text-muted mb-0">
+                                New to the platform?
+                                <a href="{% url 'register' %}" class="text-decoration-none text-primary">
+                                    <i class="bi bi-person-plus me-1"></i>Create Account
+                                </a>
                             </p>
                         </div>
                     </form>
                 </div>
+
+                <!-- Gaming Footer -->
+                <div class="card-footer text-center">
+                    <small class="text-muted">
+                        <i class="bi bi-shield-check me-1"></i>
+                        Secure gaming environment
+                    </small>
+                </div>
+            </div>
+
+            <!-- Back to Home -->
+            <div class="text-center mt-3">
+                <a href="{% url 'home' %}" class="text-decoration-none text-muted">
+                    <i class="bi bi-house me-1"></i>Back to Home
+                </a>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+/* Gaming Login Card Styling */
+.login-card {
+    background: linear-gradient(145deg, var(--secondary-bg), var(--accent-bg));
+    border: 2px solid var(--primary-blue);
+    border-radius: 15px;
+    box-shadow: 0 15px 40px rgba(0, 212, 255, 0.3);
+    backdrop-filter: blur(20px);
+    animation: loginSlideIn 0.6s ease-out;
+}
+
+@keyframes loginSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.login-card .card-header {
+    background: linear-gradient(90deg, rgba(0, 212, 255, 0.1), rgba(0, 153, 255, 0.05));
+    border-bottom: 1px solid var(--primary-blue);
+    border-radius: 15px 15px 0 0;
+}
+
+.login-icon {
+    animation: iconBounce 1s ease-out;
+}
+
+@keyframes iconBounce {
+    0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+    50% { transform: scale(1.1) rotate(5deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* Gaming Input Fields */
+.gaming-input {
+    background: var(--secondary-bg) !important;
+    border: 2px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-family: 'Courier New', monospace;
+}
+
+.gaming-input:focus {
+    border-color: var(--primary-blue) !important;
+    box-shadow: 0 0 0 0.2rem var(--glow-blue) !important;
+    background: var(--accent-bg) !important;
+    transform: scale(1.02);
+}
+
+.gaming-input::placeholder {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Login Button Beast Mode */
+.login-btn {
+    background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+    border: 2px solid var(--primary-blue);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1rem 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-btn:hover {
+    background: linear-gradient(45deg, var(--secondary-blue), var(--primary-blue));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--glow-blue);
+    border-color: var(--secondary-blue);
+}
+
+.login-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.login-btn:hover::before {
+    left: 100%;
+}
+
+/* Form Labels */
+.form-label {
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Alert Styling */
+.alert-danger {
+    background: linear-gradient(45deg, var(--danger-red), #ff1744);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+/* Card Footer */
+.login-card .card-footer {
+    background: rgba(0, 212, 255, 0.05);
+    border-top: 1px solid var(--border-color);
+    border-radius: 0 0 15px 15px;
+}
+
+/* Responsive Design */
+@media (max-width: 576px) {
+    .login-card {
+        margin: 1rem;
+    }
+
+    .login-btn {
+        padding: 0.75rem 1.5rem;
+    }
+}
+
+/* Gaming atmosphere effects */
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--primary-blue), var(--orange-accent), var(--success-green), var(--primary-blue));
+    border-radius: 15px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.login-card:hover::before {
+    opacity: 0.3;
+    animation: borderGlow 2s linear infinite;
+}
+
+@keyframes borderGlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+</style>
+
+<script>
+// Gaming login enhancements
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('.gaming-input');
+    const loginBtn = document.querySelector('.login-btn');
+
+    // Add sound effects (optional)
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            console.log('🎵 Focus sound effect');
+            this.style.borderColor = 'var(--primary-blue)';
+        });
+
+        input.addEventListener('blur', function() {
+            if (!this.value) {
+                this.style.borderColor = 'var(--border-color)';
+            }
+        });
+    });
+
+    // Login button animation
+    if (loginBtn) {
+        loginBtn.addEventListener('click', function() {
+    if (this.closest('form').checkValidity()) {
+        this.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Connecting...';
+        this.disabled = true;
+    }
+});
+});
+</script>
 {% endblock %}

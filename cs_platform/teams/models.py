@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.utils import timezone
+import random
+import hashlib
+from datetime import datetime, date
 
 User = get_user_model()
 
@@ -20,6 +23,18 @@ class Team(models.Model):
     country = models.CharField(max_length=50, blank=True)
     is_active = models.BooleanField(default=True)
     captain = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='captained_teams')
+
+    def get_realistic_founded_date(self):
+        """Generate realistic founded date between 2010-2020"""
+        team_seed = int(hashlib.md5(str(self.id).encode()).hexdigest()[:8], 16)
+        random.seed(team_seed)
+
+        # Random year between 2010-2020
+        year = random.randint(2010, 2020)
+        month = random.randint(1, 12)
+        day = random.randint(1, 28)  # Safe day range
+
+        return date(year, month, day)
 
     def get_country_flag(self):
         """Return flag emoji for country"""
@@ -141,6 +156,24 @@ class TeamMembership(models.Model):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='rifler')
     joined_date = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
+
+    def get_realistic_joined_date(self):
+        """Generate realistic joined date between 2015-2025"""
+        # Use combination of player ID and team ID for consistent randomness
+        seed = int(hashlib.md5(f"{self.player.id}_{self.team.id}".encode()).hexdigest()[:8], 16)
+        random.seed(seed)
+
+        # Random year between 2015-2025
+        year = random.randint(2015, 2025)
+        month = random.randint(1, 12)
+
+        # If it's 2025, limit to months that have passed
+        if year == 2025:
+            month = random.randint(1, 8)  # Up to August 2025
+
+        day = random.randint(1, 28)  # Safe day range
+
+        return datetime(year, month, day)
 
     class Meta:
         unique_together = ['team', 'player']

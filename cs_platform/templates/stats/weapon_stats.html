@@ -34,30 +34,8 @@
                 </div>
             </div>
 
-            <!-- Top Weapons Overview -->
-            {% if top_weapons %}
+            <!-- Player Weapon Stats TABLE FIRST! -->
             <div class="card mb-4">
-                <div class="card-header">
-                    <h5><i class="bi bi-bar-chart text-warning me-2"></i>Most Popular Weapons</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        {% for weapon in top_weapons %}
-                        <div class="col-md-2-4">
-                            <div class="text-center p-3 rounded" style="background: rgba(255, 204, 0, 0.1);">
-                                <i class="bi bi-crosshair display-6 text-warning"></i>
-                                <h6 class="mt-2">{{ weapon.weapon|upper }}</h6>
-                                <p class="mb-0 fw-bold text-warning">{{ weapon.total }} kills</p>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Player Weapon Stats -->
-            <div class="card">
                 <div class="card-header">
                     <h5><i class="bi bi-list-ul me-2"></i>Player Weapon Statistics</h5>
                 </div>
@@ -127,6 +105,28 @@
                     {% endif %}
                 </div>
             </div>
+
+            <!-- MOST POPULAR WEAPONS MOVED HERE - UNDER THE TABLE! 🔥 -->
+            {% if top_weapons %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="bi bi-bar-chart text-warning me-2"></i>Most Popular Weapons</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for weapon in top_weapons %}
+                        <div class="col-md-2-4">
+                            <div class="text-center p-3 rounded" style="background: rgba(255, 204, 0, 0.1);">
+                                <i class="bi bi-crosshair display-6 text-warning"></i>
+                                <h6 class="mt-2">{{ weapon.weapon|upper }}</h6>
+                                <p class="mb-0 fw-bold text-warning">{{ weapon.total|floatformat:0 }} kills</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
 
             <!-- Pagination -->
             {% if is_paginated %}

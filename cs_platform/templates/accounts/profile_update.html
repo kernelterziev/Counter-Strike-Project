@@ -1,0 +1,415 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile - CS Platform{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Profile Edit Header -->
+            <div class="card mb-4">
+                <div class="card-header text-center py-4">
+                    <h1 class="display-5 mb-3">
+                        <i class="bi bi-person-gear text-primary me-2"></i>Gaming Profile Editor
+                    </h1>
+                    <p class="text-muted">Customize your gaming preferences and settings</p>
+                </div>
+            </div>
+
+            <!-- Profile Edit Form -->
+            <div class="card profile-edit-card">
+                <div class="card-body p-4">
+                    <form method="post" id="profileEditForm">
+                        {% csrf_token %}
+
+                        <!-- Basic Info Section -->
+                        <div class="section-header mb-4">
+                            <h4 class="text-primary">
+                                <i class="bi bi-person-circle me-2"></i>Basic Information
+                            </h4>
+                            <hr class="neon-divider">
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="gaming-field">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                                        <i class="bi bi-person me-2"></i>First Name
+                                    </label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                        <div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="gaming-field">
+                                    <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                                        <i class="bi bi-person me-2"></i>Last Name
+                                    </label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                        <div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="gaming-field">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">
+                                        <i class="bi bi-envelope me-2"></i>Email Address
+                                    </label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="gaming-field">
+                                    <label for="{{ form.country.id_for_label }}" class="form-label">
+                                        <i class="bi bi-globe me-2"></i>Country
+                                    </label>
+                                    {{ form.country }}
+                                    {% if form.country.errors %}
+                                        <div class="text-danger small mt-1">{{ form.country.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gaming Preferences Section -->
+                        <div class="section-header mb-4 mt-5">
+                            <h4 class="text-warning">
+                                <i class="bi bi-controller me-2"></i>Gaming Preferences
+                            </h4>
+                            <hr class="neon-divider">
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="gaming-field">
+                                    <label for="{{ form.favorite_weapon.id_for_label }}" class="form-label">
+                                        <i class="bi bi-crosshair text-danger me-2"></i>Favorite Weapon
+                                    </label>
+                                    {{ form.favorite_weapon }}
+                                    {% if form.favorite_weapon.errors %}
+                                        <div class="text-danger small mt-1">{{ form.favorite_weapon.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="gaming-field">
+                                    <label for="id_favorite_map" class="form-label">
+                                        <i class="bi bi-geo-alt text-success me-2"></i>Favorite Map
+                                    </label>
+                                    <select name="favorite_map" class="form-control gaming-input" id="id_favorite_map">
+                                        <option value="">Select your favorite map...</option>
+                                        <option value="dust2">Dust 2</option>
+                                        <option value="mirage">Mirage</option>
+                                        <option value="inferno">Inferno</option>
+                                        <option value="cache">Cache</option>
+                                        <option value="overpass">Overpass</option>
+                                        <option value="train">Train</option>
+                                        <option value="nuke">Nuke</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="gaming-field">
+                                    <label for="id_favorite_team" class="form-label">
+                                        <i class="bi bi-people text-info me-2"></i>Favorite Team
+                                    </label>
+                                    <select name="favorite_team" class="form-control gaming-input" id="id_favorite_team">
+                                        <option value="">Select your favorite team...</option>
+                                        <option value="astralis">Astralis</option>
+                                        <option value="navi">NAVI</option>
+                                        <option value="vitality">Team Vitality</option>
+                                        <option value="g2">G2 Esports</option>
+                                        <option value="faze">FaZe Clan</option>
+                                        <option value="spirit">Team Spirit</option>
+                                        <option value="cloud9">Cloud9</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bio Section -->
+                        <div class="gaming-field mb-4">
+                            <label for="{{ form.bio.id_for_label }}" class="form-label">
+                                <i class="bi bi-chat-quote me-2"></i>Gaming Bio
+                            </label>
+                            {{ form.bio }}
+                            {% if form.bio.errors %}
+                                <div class="text-danger small mt-1">{{ form.bio.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Tell other gamers about yourself!</small>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between mt-5">
+                            <div>
+                                <button type="submit" class="btn btn-success btn-lg me-3">
+                                    <i class="bi bi-check-circle me-2"></i>Save Changes
+                                </button>
+                                <a href="{% url 'player_detail' user.pk %}" class="btn btn-outline-light">
+                                    <i class="bi bi-x-circle me-2"></i>Cancel
+                                </a>
+                            </div>
+
+                            <div>
+                                <button type="button" class="btn btn-danger" onclick="showDeleteModal()">
+                                    <i class="bi bi-trash me-2"></i>Delete Account
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content delete-modal">
+            <div class="modal-header border-0">
+                <div class="w-100 text-center">
+                    <div class="danger-icon mb-3">
+                        <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                    </div>
+                    <h4 class="modal-title text-danger fw-bold" id="deleteAccountModalLabel">
+                        <i class="bi bi-person-x me-2"></i>DELETE ACCOUNT WARNING
+                    </h4>
+                </div>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="warning-content mb-4">
+                    <h5 class="text-light mb-3">Are you ABSOLUTELY sure?</h5>
+                    <p class="text-warning mb-3">
+                        <i class="bi bi-exclamation-circle me-2"></i>
+                        This action will permanently delete your gaming profile!
+                    </p>
+                    <div class="consequences-list text-start">
+                        <p class="text-muted mb-2">You will lose:</p>
+                        <ul class="text-danger">
+                            <li>All your match statistics</li>
+                            <li>Team memberships</li>
+                            <li>Tournament participations</li>
+                            <li>Gaming achievements</li>
+                            <li>Profile customizations</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="alert alert-dark border border-danger">
+                    <strong class="text-danger">THIS CANNOT BE UNDONE!</strong><br>
+                    <small>Once deleted, your gaming legacy will be lost forever.</small>
+                </div>
+
+                <!-- Confirmation Input -->
+                <div class="confirmation-input mt-4">
+                    <label class="form-label text-light">
+                        Type "DELETE" to confirm account deletion:
+                    </label>
+                    <input type="text" class="form-control text-center" id="deleteConfirmation"
+                           placeholder="Type DELETE here..." style="background: var(--secondary-bg); color: var(--text-primary); border: 2px solid var(--danger-red);">
+                </div>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <div class="d-flex gap-3">
+                    <button type="button" class="btn btn-outline-light px-4" data-bs-dismiss="modal">
+                        <i class="bi bi-shield-check me-2"></i>Keep My Account
+                    </button>
+                    <button type="button" class="btn btn-danger px-4" id="confirmDeleteBtn" disabled>
+                        <i class="bi bi-trash me-2"></i>DELETE FOREVER
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Profile Edit Card Styling */
+.profile-edit-card {
+    background: linear-gradient(145deg, var(--secondary-bg), var(--accent-bg));
+    border: 2px solid var(--primary-blue);
+    border-radius: 15px;
+    box-shadow: 0 15px 40px rgba(0, 212, 255, 0.2);
+}
+
+/* Section Headers */
+.section-header h4 {
+    font-weight: 700;
+    text-shadow: 0 0 10px currentColor;
+}
+
+.neon-divider {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-blue), transparent);
+    box-shadow: 0 0 10px var(--glow-blue);
+}
+
+/* Gaming Fields */
+.gaming-field {
+    margin-bottom: 1.5rem;
+}
+
+.gaming-field .form-label {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.gaming-input {
+    background: var(--secondary-bg) !important;
+    border: 2px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.gaming-input:focus {
+    border-color: var(--primary-blue) !important;
+    box-shadow: 0 0 0 0.2rem var(--glow-blue) !important;
+    background: var(--accent-bg) !important;
+}
+
+/* Delete Modal Styling */
+.delete-modal {
+    background: linear-gradient(145deg, var(--primary-bg), var(--secondary-bg));
+    border: 2px solid var(--danger-red);
+    border-radius: 15px;
+    box-shadow: 0 20px 60px rgba(255, 51, 102, 0.4);
+}
+
+.delete-modal .modal-header {
+    background: linear-gradient(90deg, rgba(255, 51, 102, 0.1), rgba(255, 107, 53, 0.1));
+    border-radius: 15px 15px 0 0;
+    padding: 2rem 1.5rem 1rem;
+}
+
+.danger-icon {
+    font-size: 3rem;
+    animation: dangerPulse 2s ease-in-out infinite;
+}
+
+@keyframes dangerPulse {
+    0%, 100% {
+        transform: scale(1);
+        text-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+    }
+    50% {
+        transform: scale(1.1);
+        text-shadow: 0 0 20px rgba(220, 53, 69, 0.8);
+    }
+}
+
+.consequences-list {
+    background: rgba(255, 51, 102, 0.1);
+    border: 1px solid rgba(255, 51, 102, 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.delete-modal .btn-danger {
+    background: linear-gradient(45deg, var(--danger-red), #ff1744);
+    border: 2px solid var(--danger-red);
+}
+
+.delete-modal .btn-danger:hover:not(:disabled) {
+    background: linear-gradient(45deg, #ff1744, var(--danger-red));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+}
+
+.delete-modal .btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-edit-card {
+        margin: 1rem;
+    }
+
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+</style>
+
+<script>
+// Profile edit enhancements
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('profileEditForm');
+    const deleteConfirmation = document.getElementById('deleteConfirmation');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+    // Enable delete button only when "DELETE" is typed
+    if (deleteConfirmation && confirmDeleteBtn) {
+        deleteConfirmation.addEventListener('input', function() {
+            if (this.value.toUpperCase() === 'DELETE') {
+                confirmDeleteBtn.disabled = false;
+                confirmDeleteBtn.classList.add('btn-danger-active');
+            } else {
+                confirmDeleteBtn.disabled = true;
+                confirmDeleteBtn.classList.remove('btn-danger-active');
+            }
+        });
+    }
+
+    // Handle delete confirmation
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', function() {
+            // Create delete form and submit
+            const deleteForm = document.createElement('form');
+            deleteForm.method = 'POST';
+            deleteForm.action = '{% url "delete_account" %}';
+
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = 'csrfmiddlewaretoken';
+            csrfToken.value = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            deleteForm.appendChild(csrfToken);
+            document.body.appendChild(deleteForm);
+            deleteForm.submit();
+        });
+    }
+
+    // Form validation enhancements
+    const inputs = document.querySelectorAll('.gaming-input');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.style.borderColor = 'var(--primary-blue)';
+        });
+
+        input.addEventListener('blur', function() {
+            if (!this.value) {
+                this.style.borderColor = 'var(--border-color)';
+            }
+        });
+    });
+});
+
+// Show delete modal function
+function showDeleteModal() {
+    const modal = new bootstrap.Modal(document.getElementById('deleteAccountModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

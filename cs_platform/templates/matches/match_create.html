@@ -1,63 +1,262 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Create Match - CS Platform{% endblock %}
 
 {% block content %}
 <div class="container mt-5 pt-4">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="card mb-4">
                 <div class="card-header text-center py-4">
-                    <h3><i class="bi bi-plus-circle me-2"></i>Create New Match</h3>
-                    <p class="text-muted mb-0">Challenge another team to a match!</p>
+                    <h1 class="display-5 mb-3">
+                        <i class="bi bi-plus-circle-fill text-success me-2"></i>Create Epic Match
+                    </h1>
+                    <p class="text-muted">Set up the ultimate Counter-Strike showdown with AI predictions!</p>
                 </div>
+            </div>
+
+            <!-- Match Creation Form -->
+            <div class="card match-creation-card">
                 <div class="card-body p-4">
-                    <form method="post">
+                    <form method="post" id="matchCreationForm">
                         {% csrf_token %}
 
-                        <div class="mb-3">
-                            <label for="{{ form.team2.id_for_label }}" class="form-label">Opponent Team</label>
-                            {{ form.team2 }}
-                            {% if form.team2.errors %}
-                                <div class="text-danger small mt-1">
-                                    {{ form.team2.errors.0 }}
+                        <!-- Team Selection Section -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="team-selection-card">
+                                    <label for="{{ form.team1.id_for_label }}" class="form-label team-label">
+                                        <i class="bi bi-house-fill text-primary me-2"></i>Team 1 (Home)
+                                    </label>
+                                    {{ form.team1 }}
+                                    {% if form.team1.errors %}
+                                        <div class="text-danger small mt-1">{{ form.team1.errors.0 }}</div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">{{ form.team1.help_text }}</small>
                                 </div>
-                            {% endif %}
-                            <small class="form-text text-muted">Select the team you want to challenge</small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="team-selection-card">
+                                    <label for="{{ form.team2.id_for_label }}" class="form-label team-label">
+                                        <i class="bi bi-airplane-fill text-warning me-2"></i>Team 2 (Away)
+                                    </label>
+                                    {{ form.team2 }}
+                                    {% if form.team2.errors %}
+                                        <div class="text-danger small mt-1">{{ form.team2.errors.0 }}</div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">{{ form.team2.help_text }}</small>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="{{ form.map_name.id_for_label }}" class="form-label">Map</label>
-                            {{ form.map_name }}
-                            {% if form.map_name.errors %}
-                                <div class="text-danger small mt-1">
-                                    {{ form.map_name.errors.0 }}
-                                </div>
-                            {% endif %}
+                        <!-- VS Divider -->
+                        <div class="vs-divider text-center mb-4">
+                            <div class="vs-badge">
+                                <span class="display-4 text-danger fw-bold">VS</span>
+                                <div class="vs-line"></div>
+                            </div>
                         </div>
 
-                        <div class="mb-4">
-                            <label for="{{ form.match_type.id_for_label }}" class="form-label">Match Type</label>
-                            {{ form.match_type }}
-                            {% if form.match_type.errors %}
-                                <div class="text-danger small mt-1">
-                                    {{ form.match_type.errors.0 }}
+                        <!-- Map and Match Type Selection -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="map-selection-card">
+                                    <label for="{{ form.map_name.id_for_label }}" class="form-label">
+                                        <i class="bi bi-geo-alt-fill text-warning me-2"></i>{{ form.map_name.label }}
+                                    </label>
+                                    {{ form.map_name }}
+                                    {% if form.map_name.errors %}
+                                        <div class="text-danger small mt-1">{{ form.map_name.errors.0 }}</div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">{{ form.map_name.help_text }}</small>
                                 </div>
-                            {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="type-selection-card">
+                                    <label for="{{ form.match_type.id_for_label }}" class="form-label">
+                                        <i class="bi bi-trophy-fill text-success me-2"></i>{{ form.match_type.label }}
+                                    </label>
+                                    {{ form.match_type }}
+                                    {% if form.match_type.errors %}
+                                        <div class="text-danger small mt-1">{{ form.match_type.errors.0 }}</div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">{{ form.match_type.help_text }}</small>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-rocket-takeoff me-2"></i>Create Match
+                        <!-- Form Errors -->
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2 mb-4">
+                            <button type="submit" class="btn btn-success btn-lg create-match-btn">
+                                <i class="bi bi-rocket-takeoff me-2"></i>Create Match & Generate Prediction
                             </button>
-                            <a href="{% url 'match_list' %}" class="btn btn-outline-light">
-                                <i class="bi bi-arrow-left me-2"></i>Cancel
-                            </a>
                         </div>
                     </form>
                 </div>
+            </div>
+
+            <!-- Live Match Prediction Card (Hidden initially) -->
+            <div class="card prediction-card mt-4" id="predictionCard" style="display: none;">
+                <div class="card-header bg-gradient text-white text-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-cpu-fill me-2"></i>AI Match Prediction
+                        <span class="badge bg-warning text-dark ms-2">BETA</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="predictionContent">
+                        <!-- Prediction content will be dynamically loaded here -->
+                        <div class="col-12 text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Analyzing...</span>
+                            </div>
+                            <p class="mt-2 text-muted">AI analyzing team strengths...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="text-center mt-4">
+                <a href="{% url 'match_list' %}" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Matches
+                </a>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
+
+<style>
+/* Enhanced Match Creation Styling */
+.match-creation-card {
+    background: linear-gradient(145deg, var(--secondary-bg), var(--accent-bg));
+    border: 2px solid var(--primary-blue);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+}
+
+.team-selection-card,
+.map-selection-card,
+.type-selection-card {
+    background: rgba(0, 212, 255, 0.05);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 10px;
+    padding: 1.5rem;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.team-selection-card:hover,
+.map-selection-card:hover,
+.type-selection-card:hover {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: var(--primary-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.15);
+}
+
+.team-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.team-selector,
+.map-selector,
+.type-selector {
+    background: var(--secondary-bg) !important;
+    border: 2px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    font-size: 1rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.team-selector:focus,
+.map-selector:focus,
+.type-selector:focus {
+    border-color: var(--primary-blue) !important;
+    box-shadow: 0 0 0 0.2rem var(--glow-blue) !important;
+    background: var(--accent-bg) !important;
+}
+
+.team-selector option,
+.map-selector option,
+.type-selector option {
+    background: var(--secondary-bg);
+    color: var(--text-primary);
+    padding: 0.5rem;
+}
+
+/* VS Divider Styling */
+.vs-divider {
+    position: relative;
+    margin: 2rem 0;
+}
+
+.vs-badge {
+    position: relative;
+    display: inline-block;
+    background: linear-gradient(45deg, var(--danger-red), #ff1744);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+    animation: vsPulse 2s ease-in-out infinite;
+}
+
+@keyframes vsPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(255, 51, 102, 0.6);
+    }
+}
+
+.vs-line {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--danger-red), transparent);
+    transform: translate(-50%, -50%);
+    z-index: -1;
+}
+
+/* Create Match Button */
+.create-match-btn {
+    background: linear-gradient(45deg, var(--success-green), #00cc77);
+    border: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1rem 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.create-match-btn:hover {
+    background: linear-gradient(45deg, #00cc77, var(--success-green));
+    transform: translateY(-2px);

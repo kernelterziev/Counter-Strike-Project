@@ -1,0 +1,465 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load stats_filters %}
+
+{% block title %}Player Comparison - CS Platform{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5 pt-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="display-4 text-center mb-0">
+                        <i class="bi bi-person-bounding-box me-3"></i>Player Comparison Tool
+                        <span class="badge bg-warning text-dark ms-3">BETA</span>
+                    </h1>
+                    <p class="text-center text-muted mt-2">Compare two players side-by-side with detailed statistics</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Selection Form -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-5">
+                            <label for="player1" class="form-label">
+                                <i class="bi bi-person-fill me-2"></i>Player 1
+                            </label>
+                            <select name="player1" id="player1" class="form-control">
+                                <option value="">Select Player 1...</option>
+                                {% for player in all_players %}
+                                    <option value="{{ player.id }}" {% if player.id|stringformat:"s" == request.GET.player1 %}selected{% endif %}>
+                                        {{ player.username }}
+                                        {% if player.is_professional %}⭐{% endif %}
+                                        {% if player.country %}{{ player.get_country_flag }}{% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 text-center align-self-end">
+                            <div class="display-1 text-primary">VS</div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="player2" class="form-label">
+                                <i class="bi bi-person-fill me-2"></i>Player 2
+                            </label>
+                            <select name="player2" id="player2" class="form-control">
+                                <option value="">Select Player 2...</option>
+                                {% for player in all_players %}
+                                    <option value="{{ player.id }}" {% if player.id|stringformat:"s" == request.GET.player2 %}selected{% endif %}>
+                                        {{ player.username }}
+                                        {% if player.is_professional %}⭐{% endif %}
+                                        {% if player.country %}{{ player.get_country_flag }}{% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-bar-chart me-2"></i>Compare Players
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if comparison_data %}
+    <!-- Player Headers -->
+    <div class="row mb-4">
+        <div class="col-md-5">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="display-6 text-primary">{{ player1.username }}</div>
+                    {% if player1.is_professional %}
+                        <span class="badge bg-warning text-dark mb-2">PROFESSIONAL</span>
+                    {% endif %}
+                    <div class="text-muted">
+                        {% if player1.country %}
+                            {{ player1.get_country_flag }} {{ player1.country }}
+                        {% endif %}
+                    </div>
+                    {% if player1.rank %}
+                        <span class="rank-badge">{{ player1.get_rank_display }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2 text-center align-self-center">
+            <div class="display-3 text-orange-accent">⚔️</div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="display-6 text-primary">{{ player2.username }}</div>
+                    {% if player2.is_professional %}
+                        <span class="badge bg-warning text-dark mb-2">PROFESSIONAL</span>
+                    {% endif %}
+                    <div class="text-muted">
+                        {% if player2.country %}
+                            {{ player2.get_country_flag }} {{ player2.country }}
+                        {% endif %}
+                    </div>
+                    {% if player2.rank %}
+                        <span class="rank-badge">{{ player2.get_rank_display }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Basic Statistics Comparison -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="bi bi-bar-chart-fill me-2"></i>Overall Statistics</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Player 1 Stats -->
+                        <div class="col-md-5">
+                            <div class="stats-grid">
+                                <div class="stat-item d-flex justify-content-between">
+                                    <span>Total Kills:</span>
+                                    <span class="text-success fw-bold">{{ comparison_data.basic_stats|lookup:player1.id|lookup:"total_kills" }}</span>
+                                </div>
+                                <div class="stat-item d-flex justify-content-between">
+                                    <span>Total Deaths:</span>
+                                    <span class="text-danger fw-bold">{{ comparison_data.basic_stats|lookup:player1.id|lookup:"total_deaths" }}</span>
+                                </div>
+                                <div class="stat-item d-flex justify-content-between">
+                                    <span>K/D Ratio:</span>
+                                    <span class="text-primary fw-bold">{{ comparison_data.basic_stats|lookup:player1.id|lookup:"kd_ratio" }}</span>
+                                </div>
+                                <div class="stat-item d-flex justify-content-between">
+                                    <span>ADR:</span>
+                                    <span class="text-warning fw-bold">{{ comparison_data.basic_stats|lookup:player1.id|lookup:"adr" }}</span>
+                                </div>
+                                <div class="stat-item d-flex justify-content-between">
+                                    <span>HS%:</span>
+                                    <span class="text-info fw-bold">{{ comparison_data.basic_stats|lookup:player1.id|lookup:"hs_percentage" }}%</span>
+                                </div>
+                                <div class="stat-item d-flex justify-content-between">
+                                    <span>Matches:</span>
+                                    <span class="fw-bold">{{ comparison_data.basic_stats|lookup:player1.id|lookup:"match_count" }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VS Divider -->
+                        <div class="col-md-2 text-center">
+                            <div class="d-flex flex-column justify-content-center h-100">
+                                <div class="text-muted mb-2">Kills</div>
+                                <div class="text-muted mb-2">Deaths</div>
+                                <div class="text-muted mb-2">K/D</div>
+                                <div class="text-muted mb-2">ADR</div>
+                                <div class="text-muted mb-2">HS%</div>
+                                <div class="text-muted">Matches</div>
+                            </div>
+                        </div>
+
+                        <!-- Player 2 Stats -->
+                        <div class="col-md-5">
+                            <div class="stats-grid">
+                                <div class="stat-item d-flex justify-content-between">
+                                    <span class="text-success fw-bold">{{ comparison_data.basic_stats|lookup:player2.id|lookup:"total_kills" }}</span>
+                                    <span>:Total Kills</span>
+                                </div>
+                                <div class="stat-item d-flex justify-content-between">
+                                    <span class="text-danger fw-bold">{{ comparison_data.basic_stats|lookup:player2.id|lookup:"total_deaths" }}</span>
+                                    <span>:Total Deaths</span>
+                                </div>
+                                <div class="stat-item d-flex justify-content-between">
+                                    <span class="text-primary fw-bold">{{ comparison_data.basic_stats|lookup:player2.id|lookup:"kd_ratio" }}</span>
+                                    <span>:K/D Ratio</span>
+                                </div>
+                                <div class="stat-item d-flex justify-content-between">
+                                    <span class="text-warning fw-bold">{{ comparison_data.basic_stats|lookup:player2.id|lookup:"adr" }}</span>
+                                    <span>:ADR</span>
+                                </div>
+                                <div class="stat-item d-flex justify-content-between">
+                                    <span class="text-info fw-bold">{{ comparison_data.basic_stats|lookup:player2.id|lookup:"hs_percentage" }}%</span>
+                                    <span>:HS%</span>
+                                </div>
+                                <div class="stat-item d-flex justify-content-between">
+                                    <span class="fw-bold">{{ comparison_data.basic_stats|lookup:player2.id|lookup:"match_count" }}</span>
+                                    <span>:Matches</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weapon Preferences -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="bi bi-crosshair me-2"></i>Weapon Preferences</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Player 1 Weapons -->
+                        <div class="col-md-6">
+                            <h5 class="text-center text-primary mb-3">{{ player1.username }}</h5>
+                            {% for weapon in comparison_data.weapon_preferences|lookup:player1.id %}
+                            <div class="weapon-stat mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold">{{ weapon.weapon }}</span>
+                                    <span class="text-success">{{ weapon.kills }} kills ({{ weapon.percentage }}%)</span>
+                                </div>
+                                <div class="progress mt-1" style="height: 8px;">
+                                    <div class="progress-bar bg-primary" style="width: {{ weapon.percentage }}%"></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Player 2 Weapons -->
+                        <div class="col-md-6">
+                            <h5 class="text-center text-primary mb-3">{{ player2.username }}</h5>
+                            {% for weapon in comparison_data.weapon_preferences|lookup:player2.id %}
+                            <div class="weapon-stat mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold">{{ weapon.weapon }}</span>
+                                    <span class="text-success">{{ weapon.kills }} kills ({{ weapon.percentage }}%)</span>
+                                </div>
+                                <div class="progress mt-1" style="height: 8px;">
+                                    <div class="progress-bar bg-orange-accent" style="width: {{ weapon.percentage }}%"></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Performance -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="bi bi-geo-alt-fill me-2"></i>Map Performance</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Player 1 Maps -->
+                        <div class="col-md-6">
+                            <h5 class="text-center text-primary mb-3">{{ player1.username }}</h5>
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Map</th>
+                                            <th>Matches</th>
+                                            <th>Win Rate</th>
+                                            <th>Avg K/D</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for map_stat in comparison_data.map_performance|lookup:player1.id %}
+                                        <tr>
+                                            <td class="fw-bold">{{ map_stat.map }}</td>
+                                            <td>{{ map_stat.matches }}</td>
+                                            <td>
+                                                <span class="{% if map_stat.win_rate >= 60 %}text-success{% elif map_stat.win_rate >= 45 %}text-warning{% else %}text-danger{% endif %}">
+                                                    {{ map_stat.win_rate }}%
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="{% if map_stat.kd >= 1.2 %}text-success{% elif map_stat.kd >= 1.0 %}text-warning{% else %}text-danger{% endif %}">
+                                                    {{ map_stat.kd }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Player 2 Maps -->
+                        <div class="col-md-6">
+                            <h5 class="text-center text-primary mb-3">{{ player2.username }}</h5>
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Map</th>
+                                            <th>Matches</th>
+                                            <th>Win Rate</th>
+                                            <th>Avg K/D</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for map_stat in comparison_data.map_performance|lookup:player2.id %}
+                                        <tr>
+                                            <td class="fw-bold">{{ map_stat.map }}</td>
+                                            <td>{{ map_stat.matches }}</td>
+                                            <td>
+                                                <span class="{% if map_stat.win_rate >= 60 %}text-success{% elif map_stat.win_rate >= 45 %}text-warning{% else %}text-danger{% endif %}">
+                                                    {{ map_stat.win_rate }}%
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="{% if map_stat.kd >= 1.2 %}text-success{% elif map_stat.kd >= 1.0 %}text-warning{% else %}text-danger{% endif %}">
+                                                    {{ map_stat.kd }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team History -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="bi bi-people-fill me-2"></i>Team History</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Player 1 Team History -->
+                        <div class="col-md-6">
+                            <h5 class="text-center text-primary mb-3">{{ player1.username }}</h5>
+                            {% for team_info in comparison_data.team_history|lookup:player1.id %}
+                            <div class="team-history-item mb-3 p-3 border rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1 text-warning">{{ team_info.team }}</h6>
+                                        <small class="text-muted">{{ team_info.period }}</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="fw-bold">{{ team_info.wins }}/{{ team_info.matches }}</div>
+                                        <small class="text-success">{{ team_info.wins|percentage:team_info.matches }}% win rate</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Player 2 Team History -->
+                        <div class="col-md-6">
+                            <h5 class="text-center text-primary mb-3">{{ player2.username }}</h5>
+                            {% for team_info in comparison_data.team_history|lookup:player2.id %}
+                            <div class="team-history-item mb-3 p-3 border rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1 text-warning">{{ team_info.team }}</h6>
+                                        <small class="text-muted">{{ team_info.period }}</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="fw-bold">{{ team_info.wins }}/{{ team_info.matches }}</div>
+                                        <small class="text-success">{{ team_info.wins|percentage:team_info.matches }}% win rate</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+        {% if request.GET.player1 and request.GET.player2 and not comparison_data %}
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-warning text-center">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Please select both players to see the comparison.
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endif %}
+</div>
+
+<style>
+.stat-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+}
+
+.weapon-stat .progress {
+    background-color: var(--secondary-bg);
+}
+
+.team-history-item {
+    background: var(--accent-bg);
+    border-color: var(--border-color) !important;
+    transition: all 0.3s ease;
+}
+
+.team-history-item:hover {
+    background: var(--secondary-bg);
+    border-color: var(--primary-blue) !important;
+}
+
+.progress-bar.bg-orange-accent {
+    background-color: var(--orange-accent) !important;
+}
+
+.table-dark {
+    --bs-table-bg: var(--secondary-bg);
+    --bs-table-border-color: var(--border-color);
+}
+
+.table-dark tbody tr:hover {
+    background-color: var(--accent-bg);
+}
+
+/* Custom filter for Django templates */
+</style>
+
+<script>
+// Auto-submit form when both players are selected
+document.addEventListener('DOMContentLoaded', function() {
+    const player1Select = document.getElementById('player1');
+    const player2Select = document.getElementById('player2');
+
+    function autoSubmit() {
+        if (player1Select.value && player2Select.value) {
+            // Small delay to show selection
+            setTimeout(() => {
+                document.querySelector('form').submit();
+            }, 300);
+        }
+    }
+
+    player1Select.addEventListener('change', autoSubmit);
+    player2Select.addEventListener('change', autoSubmit);
+});
+</script>
+{% endblock %}
