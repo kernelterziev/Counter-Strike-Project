@@ -9,4 +9,6 @@ urlpatterns = [
     path('<int:tournament_pk>/admin/add-team/', views.admin_add_team, name='admin_add_team'),
     path('<int:tournament_pk>/admin/remove-team/', views.admin_remove_team, name='admin_remove_team'),
     path('api/team/<int:team_pk>/', views.get_team_info, name='get_team_info'),
+    path('<int:tournament_id>/delete/', views.delete_tournament, name='delete_tournament'),
+    path('<int:tournament_id>/ajax-delete/', views.ajax_delete_tournament, name='ajax_delete_tournament'),
 ]

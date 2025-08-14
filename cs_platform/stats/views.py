@@ -51,7 +51,7 @@ def player_comparison(request):
     # Get all players for selection
     all_players = User.objects.filter(
         Q(match_stats__isnull=False) | Q(is_professional=True)
-    ).distinct().order_by('username')
+    ).distinct().order_by('username')[:35]
 
     context = {
         'player1': player1,
@@ -122,15 +122,11 @@ def generate_player_comparison(player1, player2):
             {'weapon': 'AK-47', 'kills': p1_stats['total_kills'] // 3, 'percentage': 33.2},
             {'weapon': 'M4A4', 'kills': p1_stats['total_kills'] // 4, 'percentage': 25.1},
             {'weapon': 'AWP', 'kills': p1_stats['total_kills'] // 8, 'percentage': 12.8},
-            {'weapon': 'Deagle', 'kills': p1_stats['total_kills'] // 12, 'percentage': 8.5},
-            {'weapon': 'Glock', 'kills': p1_stats['total_kills'] // 15, 'percentage': 6.7},
         ],
         player2.id: [
             {'weapon': 'AK-47', 'kills': p2_stats['total_kills'] // 3, 'percentage': 31.8},
             {'weapon': 'AWP', 'kills': p2_stats['total_kills'] // 5, 'percentage': 19.2},
             {'weapon': 'M4A1-S', 'kills': p2_stats['total_kills'] // 4, 'percentage': 24.3},
-            {'weapon': 'Deagle', 'kills': p2_stats['total_kills'] // 10, 'percentage': 9.8},
-            {'weapon': 'USP-S', 'kills': p2_stats['total_kills'] // 18, 'percentage': 5.5},
         ]
     }
 
@@ -140,15 +136,11 @@ def generate_player_comparison(player1, player2):
             {'map': 'Dust 2', 'matches': 25, 'wins': 16, 'win_rate': 64.0, 'avg_kills': 19.2, 'kd': 1.34},
             {'map': 'Mirage', 'matches': 22, 'wins': 12, 'win_rate': 54.5, 'avg_kills': 17.8, 'kd': 1.18},
             {'map': 'Inferno', 'matches': 18, 'wins': 11, 'win_rate': 61.1, 'avg_kills': 18.5, 'kd': 1.28},
-            {'map': 'Cache', 'matches': 15, 'wins': 8, 'win_rate': 53.3, 'avg_kills': 16.9, 'kd': 1.12},
-            {'map': 'Overpass', 'matches': 12, 'wins': 5, 'win_rate': 41.7, 'avg_kills': 15.2, 'kd': 0.95},
-        ],
+            ],
         player2.id: [
             {'map': 'Mirage', 'matches': 28, 'wins': 18, 'win_rate': 64.3, 'avg_kills': 20.1, 'kd': 1.42},
             {'map': 'Dust 2', 'matches': 24, 'wins': 13, 'win_rate': 54.2, 'avg_kills': 18.7, 'kd': 1.21},
             {'map': 'Inferno', 'matches': 20, 'wins': 14, 'win_rate': 70.0, 'avg_kills': 19.8, 'kd': 1.51},
-            {'map': 'Train', 'matches': 16, 'wins': 9, 'win_rate': 56.3, 'avg_kills': 17.4, 'kd': 1.15},
-            {'map': 'Cache', 'matches': 14, 'wins': 6, 'win_rate': 42.9, 'avg_kills': 16.1, 'kd': 1.03},
         ]
     }
 
@@ -198,7 +190,7 @@ def team_match_history(request, team_id):
 
     context = {
         'team': team,
-        'matches': all_matches[:5],  # Show only last 5
+        'matches': all_matches[:3],  # Show only last 5
         'team_stats': team_stats,
     }
 

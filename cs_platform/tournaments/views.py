@@ -264,7 +264,48 @@ def admin_remove_team(request, tournament_pk):
     return redirect('tournament_detail', pk=tournament_pk)
 
 
-# NEW: AJAX endpoint to get team info
+@login_required
+def delete_tournament(request, tournament_id):
+    """Delete a tournament - ORGANIZER ONLY! 🔥"""
+    tournament = get_object_or_404(Tournament, id=tournament_id)
+
+
+    if request.method == 'POST':
+        tournament_name = tournament.name
+        tournament.delete()
+
+        messages.success(request, f'🗑️ Tournament "{tournament_name}" has been deleted successfully!')
+        return redirect('tournament_list')
+
+    # If GET request, show confirmation page
+    context = {
+        'tournament': tournament,
+        'title': 'Delete Tournament'
+    }
+    return render(request, 'tournaments/delete_tournament_confirm.html', context)
+
+
+@login_required
+def ajax_delete_tournament(request, tournament_id):
+    """AJAX delete for smooth UX"""
+    if request.method == 'POST':
+        tournament = get_object_or_404(Tournament, id=tournament_id)
+
+        # Check if user is the organizer
+        if tournament.organizer != request.user:
+            return JsonResponse({'success': False, 'message': 'Permission denied'})
+
+        tournament_name = tournament.name
+        tournament.delete()
+
+        return JsonResponse({
+            'success': True,
+            'message': f'Tournament "{tournament_name}" deleted successfully!',
+            'redirect_url': '/tournaments/'
+        })
+
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
+
 @login_required
 def get_team_info(request, team_pk):
     """Get team information for admin panel preview"""
@@ -287,3 +328,4 @@ def get_team_info(request, team_pk):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+

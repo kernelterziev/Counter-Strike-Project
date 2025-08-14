@@ -21,7 +21,7 @@
                     <div class="card text-center">
                         <div class="card-body">
                             <i class="bi bi-controller display-4 text-primary mb-2"></i>
-                            <h4>{{ total_matches }}</h4>
+                            <h4 class="text-light">{{ total_matches }}</h4>
                             <p class="text-muted mb-0">Total Matches</p>
                         </div>
                     </div>
@@ -30,7 +30,7 @@
                     <div class="card text-center">
                         <div class="card-body">
                             <i class="bi bi-check-circle display-4 text-success mb-2"></i>
-                            <h4>{{ finished_matches }}</h4>
+                            <h4 class="text-light">{{ finished_matches }}</h4>
                             <p class="text-muted mb-0">Finished</p>
                         </div>
                     </div>
@@ -39,7 +39,7 @@
                     <div class="card text-center">
                         <div class="card-body">
                             <i class="bi bi-play-circle display-4 text-warning mb-2"></i>
-                            <h4>{{ ongoing_matches }}</h4>
+                            <h4 class="text-light">{{ ongoing_matches }}</h4>
                             <p class="text-muted mb-0">Ongoing</p>
                         </div>
                     </div>
@@ -168,15 +168,15 @@
                                     <div class="match-info">
                                         <p class="mb-1">
                                             <i class="bi bi-map text-info me-1"></i>
-                                            <strong>{{ match.get_map_name_display }}</strong>
+                                            <strong><h7 class="text-light">{{ match.get_map_name_display }}</h7></strong>
                                         </p>
                                         <p class="mb-1">
-                                            <i class="bi bi-calendar3 text-muted me-1"></i>
-                                            {{ match.match_date|date:"M d, Y" }}
+                                            <i class="bi bi-calendar3 text-light me-1"></i>
+                                            <h7 class="text-light">{{ match.match_date|date:"M d, Y" }}</h7>
                                         </p>
                                         <p class="mb-1">
-                                            <i class="bi bi-clock text-muted me-1"></i>
-                                            {{ match.match_date|date:"H:i" }}
+                                            <i class="bi bi-clock text-light me-1"></i>
+                                            <h7 class="text-light">{{ match.match_date|date:"H:i" }}</h7>
                                         </p>
                                         {% if match.duration_minutes %}
                                             <p class="mb-0">

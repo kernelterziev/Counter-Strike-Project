@@ -66,22 +66,22 @@
 
                             <div class="mb-2">
                                 <i class="bi bi-cash-stack text-warning"></i>
-                                <strong>${{ tournament.prize_pool|floatformat:0 }}</strong> Prize Pool
+                                <strong><h8 class="text-light">${{ tournament.prize_pool|floatformat:0 }}</h8></strong> Prize Pool
                             </div>
 
                             <div class="mb-2">
                                 <i class="bi bi-people-fill text-primary"></i>
-                                {{ tournament.participants.count }}/{{ tournament.max_teams }} Teams
+                                <h8 class="text-light">{{ tournament.participants.count }}/{{ tournament.max_teams }} Teams</h8>
                             </div>
 
                             <div class="mb-2">
                                 <i class="bi bi-calendar3 text-info"></i>
-                                {{ tournament.start_date|date:"M d, Y" }}
+                                <h8 class="text-light">{{ tournament.start_date|date:"M d, Y" }}</h8>
                             </div>
 
                             <div class="mb-2">
                                 <i class="bi bi-person-badge text-success"></i>
-                                Organizer: {{ tournament.organizer.username }}
+                                <h8 class="text-light">Organizer: {{ tournament.organizer.username }}</h8>
                             </div>
                         </div>
 

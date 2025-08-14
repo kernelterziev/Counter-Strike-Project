@@ -16,7 +16,7 @@
                     <div class="card text-center">
                         <div class="card-body">
                             <i class="bi bi-people-fill display-4 text-primary mb-3"></i>
-                            <h4>{{ total_players }}</h4>
+                            <h4 class="text-light">{{ total_players }}</h4>
                             <p class="text-muted">Total Players</p>
                         </div>
                     </div>
@@ -25,7 +25,7 @@
                     <div class="card text-center">
                         <div class="card-body">
                             <i class="bi bi-shield-fill display-4 text-success mb-3"></i>
-                            <h4>{{ total_teams }}</h4>
+                            <h4 class="text-light">{{ total_teams }}</h4>
                             <p class="text-muted">Active Teams</p>
                         </div>
                     </div>
@@ -34,7 +34,7 @@
                     <div class="card text-center">
                         <div class="card-body">
                             <i class="bi bi-controller display-4 text-warning mb-3"></i>
-                            <h4>{{ total_matches }}</h4>
+                            <h4 class="text-light">{{ total_matches }}</h4>
                             <p class="text-muted">Matches Played</p>
                         </div>
                     </div>
@@ -61,7 +61,7 @@
                                         <i class="bi bi-person-circle me-2" style="font-size: 2rem;"></i>
                                     {% endif %}
                                     <div>
-                                        <strong>{{ player.username }}</strong>
+                                        <strong><h8 class="text-light">{{ player.username }}</h8></strong>
                                         {% if player.rank %}
                                             <br><span class="rank-badge">{{ player.get_rank_display }}</span>
                                         {% endif %}
@@ -135,7 +135,7 @@
                                         <i class="bi bi-shield-fill me-2 text-primary" style="font-size: 2rem;"></i>
                                     {% endif %}
                                     <div>
-                                        <strong>[{{ team.tag }}] {{ team.name }}</strong>
+                                        <strong><h8 class="text-light">[{{ team.tag }}] {{ team.name }}</h8></strong>
                                         <br><small class="text-muted">{{ team.member_count }} members</small>
                                     </div>
                                 </div>
@@ -162,7 +162,7 @@
                             {% for weapon in weapon_popularity %}
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
-                                    <strong>{{ weapon.weapon|upper }}</strong>
+                                    <strong><h8 class="text-light">{{ weapon.weapon|upper }}</h8></strong>
                                     <br><small class="text-muted">{{ weapon.user_count }} players</small>
                                 </div>
                                 <div class="text-end">

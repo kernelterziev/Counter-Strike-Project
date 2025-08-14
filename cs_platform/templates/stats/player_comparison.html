@@ -134,28 +134,28 @@
                         <div class="col-md-5">
                             <div class="stats-grid">
                                 <div class="stat-item d-flex justify-content-between">
-                                    <span>Total Kills:</span>
+                                    <span class="text-light">Total Kills:</span>
                                     <span class="text-success fw-bold">{{ comparison_data.basic_stats|lookup:player1.id|lookup:"total_kills" }}</span>
                                 </div>
                                 <div class="stat-item d-flex justify-content-between">
-                                    <span>Total Deaths:</span>
+                                    <span class="text-light">Total Deaths:</span>
                                     <span class="text-danger fw-bold">{{ comparison_data.basic_stats|lookup:player1.id|lookup:"total_deaths" }}</span>
                                 </div>
                                 <div class="stat-item d-flex justify-content-between">
-                                    <span>K/D Ratio:</span>
+                                    <span class="text-light">K/D Ratio:</span>
                                     <span class="text-primary fw-bold">{{ comparison_data.basic_stats|lookup:player1.id|lookup:"kd_ratio" }}</span>
                                 </div>
                                 <div class="stat-item d-flex justify-content-between">
-                                    <span>ADR:</span>
+                                    <span class="text-light">ADR:</span>
                                     <span class="text-warning fw-bold">{{ comparison_data.basic_stats|lookup:player1.id|lookup:"adr" }}</span>
                                 </div>
                                 <div class="stat-item d-flex justify-content-between">
-                                    <span>HS%:</span>
+                                    <span class="text-light">HS%:</span>
                                     <span class="text-info fw-bold">{{ comparison_data.basic_stats|lookup:player1.id|lookup:"hs_percentage" }}%</span>
                                 </div>
                                 <div class="stat-item d-flex justify-content-between">
-                                    <span>Matches:</span>
-                                    <span class="fw-bold">{{ comparison_data.basic_stats|lookup:player1.id|lookup:"match_count" }}</span>
+                                    <span class="text-light">Matches:</span>
+                                    <span class="text-light">{{ comparison_data.basic_stats|lookup:player1.id|lookup:"match_count" }}</span>
                                 </div>
                             </div>
                         </div>
@@ -177,27 +177,27 @@
                             <div class="stats-grid">
                                 <div class="stat-item d-flex justify-content-between">
                                     <span class="text-success fw-bold">{{ comparison_data.basic_stats|lookup:player2.id|lookup:"total_kills" }}</span>
-                                    <span>:Total Kills</span>
+                                    <span class="text-light">:Total Kills</span>
                                 </div>
                                 <div class="stat-item d-flex justify-content-between">
                                     <span class="text-danger fw-bold">{{ comparison_data.basic_stats|lookup:player2.id|lookup:"total_deaths" }}</span>
-                                    <span>:Total Deaths</span>
+                                    <span class="text-light">:Total Deaths</span>
                                 </div>
                                 <div class="stat-item d-flex justify-content-between">
                                     <span class="text-primary fw-bold">{{ comparison_data.basic_stats|lookup:player2.id|lookup:"kd_ratio" }}</span>
-                                    <span>:K/D Ratio</span>
+                                    <span class="text-light">:K/D Ratio</span>
                                 </div>
                                 <div class="stat-item d-flex justify-content-between">
                                     <span class="text-warning fw-bold">{{ comparison_data.basic_stats|lookup:player2.id|lookup:"adr" }}</span>
-                                    <span>:ADR</span>
+                                    <span class="text-light">:ADR</span>
                                 </div>
                                 <div class="stat-item d-flex justify-content-between">
                                     <span class="text-info fw-bold">{{ comparison_data.basic_stats|lookup:player2.id|lookup:"hs_percentage" }}%</span>
-                                    <span>:HS%</span>
+                                    <span class="text-light">:HS%</span>
                                 </div>
                                 <div class="stat-item d-flex justify-content-between">
-                                    <span class="fw-bold">{{ comparison_data.basic_stats|lookup:player2.id|lookup:"match_count" }}</span>
-                                    <span>:Matches</span>
+                                    <span class="text-light">{{ comparison_data.basic_stats|lookup:player2.id|lookup:"match_count" }}</span>
+                                    <span class="text-light">:Matches</span>
                                 </div>
                             </div>
                         </div>
@@ -222,7 +222,7 @@
                             {% for weapon in comparison_data.weapon_preferences|lookup:player1.id %}
                             <div class="weapon-stat mb-2">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold">{{ weapon.weapon }}</span>
+                                    <span class="fw-bold text-light">{{ weapon.weapon }}</span>
                                     <span class="text-success">{{ weapon.kills }} kills ({{ weapon.percentage }}%)</span>
                                 </div>
                                 <div class="progress mt-1" style="height: 8px;">
@@ -238,7 +238,7 @@
                             {% for weapon in comparison_data.weapon_preferences|lookup:player2.id %}
                             <div class="weapon-stat mb-2">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold">{{ weapon.weapon }}</span>
+                                    <span class="fw-bold text-light">{{ weapon.weapon }}</span>
                                     <span class="text-success">{{ weapon.kills }} kills ({{ weapon.percentage }}%)</span>
                                 </div>
                                 <div class="progress mt-1" style="height: 8px;">
@@ -357,7 +357,7 @@
                                         <small class="text-muted">{{ team_info.period }}</small>
                                     </div>
                                     <div class="text-end">
-                                        <div class="fw-bold">{{ team_info.wins }}/{{ team_info.matches }}</div>
+                                        <div class="fw-bold text-light">{{ team_info.wins }}/{{ team_info.matches }}</div>
                                         <small class="text-success">{{ team_info.wins|percentage:team_info.matches }}% win rate</small>
                                     </div>
                                 </div>
@@ -376,7 +376,7 @@
                                         <small class="text-muted">{{ team_info.period }}</small>
                                     </div>
                                     <div class="text-end">
-                                        <div class="fw-bold">{{ team_info.wins }}/{{ team_info.matches }}</div>
+                                        <div class="fw-bold text-light">{{ team_info.wins }}/{{ team_info.matches }}</div>
                                         <small class="text-success">{{ team_info.wins|percentage:team_info.matches }}% win rate</small>
                                     </div>
                                 </div>
