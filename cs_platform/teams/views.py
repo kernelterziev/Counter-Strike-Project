@@ -347,3 +347,20 @@ class TeamDetailView(DetailView):
 
         return context
 
+
+def delete_team(request, team_id):
+    team = get_object_or_404(Team, id=team_id)
+
+    if request.method == 'POST':
+        team_name = f"[{team.tag}] {team.name}"
+        team.delete()
+
+        messages.success(request, f'🗑️ Team "{team_name}" has been deleted successfully!')
+        return redirect('team_list')
+
+    # If GET request, show confirmation page
+    context = {
+        'team': team,
+        'title': 'Delete Team'
+    }
+    return render(request, 'teams/delete_team_confirm.html', context)

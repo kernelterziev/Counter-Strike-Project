@@ -15,9 +15,7 @@
                 <div class="card-header text-center py-4">
                     <h1 class="mb-3 text-light">
                         <i class="bi bi-trophy-fill text-warning me-2"></i>{{ tournament.name }}
-                        {% if is_organizer %}
-                            <span class="badge bg-danger ms-2">ORGANIZER</span>
-                        {% endif %}
+                        <span class="badge bg-danger ms-2">ADMIN MODE</span>
                     </h1>
                     <div class="row justify-content-center">
                         <div class="col-auto">
@@ -94,13 +92,12 @@
                 </div>
             </div>
 
-            <!-- Tournament Admin Panel (Only for Organizer) -->
-            {% if is_organizer %}
+            <!-- 🔥 TOURNAMENT ADMIN PANEL - ALWAYS VISIBLE FOR TESTING -->
             <div class="card mb-4 border-danger">
                 <div class="card-header bg-danger text-white">
                     <h5 class="mb-0">
                         <i class="bi bi-gear-fill me-2"></i>Tournament Admin Panel
-                        <span class="badge bg-dark ms-2">ORGANIZER ONLY</span>
+                        <span class="badge bg-dark ms-2">TESTING MODE</span>
                     </h5>
                 </div>
                 <div class="card-body">
@@ -204,51 +201,12 @@
                     </div>
                 </div>
             </div>
-            {% endif %}
-
-            <!-- Normal Registration Section (For Non-Organizers) -->
-            {% if not is_organizer %}
-                {% if can_register and available_teams %}
-                <div class="card mb-4 border-success">
-                    <div class="card-header bg-success text-dark">
-                        <h5 class="mb-0"><i class="bi bi-rocket-takeoff me-2"></i>Register Your Team</h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="text-light">Registration is open! Choose one of your teams to participate:</p>
-                        <div class="text-center">
-                            <a href="{% url 'tournament_register' tournament.pk %}" class="btn btn-success btn-lg">
-                                <i class="bi bi-plus-circle me-2"></i>Register Team
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                {% elif user.is_authenticated and tournament.status == 'upcoming' %}
-                <div class="card mb-4 border-warning">
-                    <div class="card-body text-center">
-                        {% if not spots_left %}
-                            <i class="bi bi-x-circle display-4 text-danger"></i>
-                            <h5 class="text-danger mt-2">Tournament Full</h5>
-                            <p class="text-light">This tournament has reached maximum capacity.</p>
-                        {% else %}
-                            <i class="bi bi-info-circle display-4 text-warning"></i>
-                            <h5 class="text-warning mt-2">Cannot Register</h5>
-                            <p class="text-light">You need to be a member of an active team to register.</p>
-                            <a href="{% url 'team_list' %}" class="btn btn-outline-light">
-                                <i class="bi bi-people me-2"></i>Browse Teams
-                            </a>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endif %}
-            {% endif %}
 
             <!-- Participants Section -->
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="text-light"><i class="bi bi-list-ul me-2"></i>Participating Teams ({{ participants.count }})</h5>
-                    {% if is_organizer and participants %}
-                    <small class="text-light">Click team cards to remove</small>
-                    {% endif %}
+                    <small class="text-light">Click X to remove teams</small>
                 </div>
                 <div class="card-body">
                     {% if participants %}
@@ -256,18 +214,15 @@
                             {% for participation in participants %}
                             <div class="col-md-6 col-lg-4">
                                 <div class="card bg-transparent border-primary team-card
-                                            {% if participation.team.is_professional %}border-warning pro-team{% endif %}
-                                            {% if is_organizer %}admin-team-card{% endif %}">
+                                            {% if participation.team.is_professional %}border-warning pro-team{% endif %} admin-team-card">
                                     <div class="card-body text-center position-relative">
 
-                                        <!-- Remove Button for Organizer -->
-                                        {% if is_organizer %}
+                                        <!-- Remove Button -->
                                         <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
                                                 onclick="showRemoveModal('{{ participation.team.id }}', '{{ participation.team.name }}', '{{ participation.team.tag }}')"
                                                 title="Remove Team">
                                             <i class="bi bi-x-lg"></i>
                                         </button>
-                                        {% endif %}
 
                                         <!-- Team Logo -->
                                         {% if participation.team.logo %}
@@ -295,16 +250,6 @@
                                             <span class="badge bg-primary mb-2">COMMUNITY</span>
                                         {% endif %}
 
-                                        <!-- Placement & Prize -->
-                                        {% if participation.placement %}
-                                            <span class="badge bg-success mb-2">
-                                                #{{ participation.placement }}
-                                                {% if participation.prize_won > 0 %}
-                                                    - ${{ participation.prize_won|floatformat:0 }}
-                                                {% endif %}
-                                            </span>
-                                        {% endif %}
-
                                         <!-- Registration Date -->
                                         <p class="text-light small mt-2">
                                             Registered: {{ participation.registration_date|date:"M d" }}
@@ -324,11 +269,7 @@
                         <div class="text-center py-4">
                             <i class="bi bi-people display-4 text-muted"></i>
                             <h5 class="text-muted mt-2">No teams registered yet</h5>
-                            {% if is_organizer %}
-                                <p class="text-muted">Use the admin panel above to add teams!</p>
-                            {% else %}
-                                <p class="text-muted">Be the first team to join this tournament!</p>
-                            {% endif %}
+                            <p class="text-muted">Use the admin panel above to add teams!</p>
                         </div>
                     {% endif %}
                 </div>
@@ -339,16 +280,13 @@
                 <a href="{% url 'tournament_list' %}" class="btn btn-outline-light">
                     <i class="bi bi-arrow-left"></i> Back to Tournaments
                 </a>
-                {% if True %}
                 <button class="btn btn-outline-danger ms-2" onclick="showDeleteConfirm({{ tournament.id }})">
                     <i class="bi bi-trash3"></i> Delete Tournament
                 </button>
-                {% endif %}
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- Custom Delete Confirmation Modal -->
 <div id="deleteTournamentModal" class="modal fade" tabindex="-1">
@@ -377,14 +315,14 @@
     </div>
 </div>
 
-<!-- Gaming Modal for Team Removal -->
+<!-- 🎮 GAMING MODAL FOR TEAM REMOVAL - FIXED STYLING -->
 <div class="modal fade" id="removeTeamModal" tabindex="-1" aria-labelledby="removeTeamModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content gaming-modal">
-            <div class="modal-header border-0">
-                <div class="w-100 text-center">
+        <div class="modal-content" style="background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid #dc3545;">
+            <div class="modal-header border-0 text-center">
+                <div class="w-100">
                     <div class="warning-icon mb-3">
-                        <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+                        <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 3rem;"></i>
                     </div>
                     <h4 class="modal-title text-danger fw-bold" id="removeTeamModalLabel">
                         <i class="bi bi-shield-x me-2"></i>REMOVE TEAM WARNING
@@ -394,18 +332,18 @@
             <div class="modal-body text-center py-4">
                 <div class="team-info-preview mb-4">
                     <div class="team-avatar mb-3">
-                        <i class="bi bi-shield-fill text-primary display-4"></i>
+                        <i class="bi bi-shield-fill text-primary" style="font-size: 3rem;"></i>
                     </div>
-                    <h5 class="team-name-display text-light mb-2"></h5>
-                    <p class="text-warning mb-0">
+                    <h5 class="team-name-display text-warning fw-bold mb-3"></h5>
+                    <p class="text-danger mb-3 fw-bold">
                         <i class="bi bi-exclamation-circle me-2"></i>
                         This action cannot be undone!
                     </p>
                 </div>
 
-                <div class="alert alert-dark border border-warning">
-                    <i class="bi bi-info-circle text-info me-2"></i>
-                    The team will be permanently removed from this tournament.
+                <div class="alert alert-danger border border-warning" style="background: rgba(220, 53, 69, 0.2);">
+                    <i class="bi bi-info-circle text-warning me-2"></i>
+                    <span class="text-white">The team will be permanently removed from this tournament.</span>
                 </div>
             </div>
             <div class="modal-footer border-0 justify-content-center">
@@ -452,15 +390,6 @@
     box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);
 }
 
-.remove-team-form {
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.admin-team-card:hover .remove-team-form {
-    opacity: 1;
-}
-
 .team-name {
     margin-top: 0.5rem;
     font-weight: 600;
@@ -495,32 +424,6 @@
     font-weight: 700;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .admin-team-card .remove-team-form {
-        opacity: 1;
-    }
-
-    .team-name {
-        font-size: 0.9rem;
-    }
-
-    .card-body {
-        padding: 1rem;
-    }
-}
-
-/* Animation for added teams */
-@keyframes teamAdded {
-    0% { transform: scale(0.8); opacity: 0; }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-.team-card.newly-added {
-    animation: teamAdded 0.6s ease-out;
-}
-
 /* Badge styling improvements */
 .badge {
     font-size: 0.75rem;
@@ -543,11 +446,9 @@ function showDeleteConfirm(tournamentId) {
 
 function confirmTournamentDelete() {
     if (tournamentToDelete) {
-        // Hide modal first
         const modal = bootstrap.Modal.getInstance(document.getElementById('deleteTournamentModal'));
         modal.hide();
 
-        // Delete tournament via form submission
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = `/tournaments/${tournamentToDelete}/delete/`;
@@ -563,38 +464,24 @@ function confirmTournamentDelete() {
     }
 }
 
-// Gaming Modal Functions
 function showRemoveModal(teamId, teamName, teamTag) {
-    // Set team info in modal
     document.getElementById('removeTeamId').value = teamId;
     document.querySelector('.team-name-display').textContent = `[${teamTag}] ${teamName}`;
 
-    // Show modal with gaming effect
     const modal = new bootstrap.Modal(document.getElementById('removeTeamModal'));
     modal.show();
-
-    // Add sound effect (optional - you can add gaming sounds)
-    playWarningSound();
 }
 
-function playWarningSound() {
-    // Optional: Add gaming sound effect
-    // You can add actual audio files later
-    console.log('🎵 Warning sound effect played!');
-}
-
-// Enhanced team selector with search functionality
+// Enhanced team selector
 document.addEventListener('DOMContentLoaded', function() {
     const teamSelector = document.getElementById('teamSelector');
 
     if (teamSelector) {
-        // Add search functionality
         teamSelector.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption && selectedOption.value) {
                 const teamType = selectedOption.getAttribute('data-type');
 
-                // Visual feedback for team type
                 if (teamType === 'pro') {
                     this.style.borderColor = '#ffd700';
                     this.style.boxShadow = '0 0 0 0.2rem rgba(255, 215, 0, 0.3)';
@@ -606,16 +493,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.style.borderColor = '';
                 this.style.boxShadow = '';
             }
-        });
-    }
-
-    // Modal close animations
-    const removeModal = document.getElementById('removeTeamModal');
-    if (removeModal) {
-        removeModal.addEventListener('hidden.bs.modal', function() {
-            // Reset modal content
-            document.querySelector('.team-name-display').textContent = '';
-            document.getElementById('removeTeamId').value = '';
         });
     }
 

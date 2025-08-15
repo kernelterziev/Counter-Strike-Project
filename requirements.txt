@@ -15,14 +15,14 @@ psycopg2-binary==2.9.7   PostgreSQL
 mysqlclient==2.2.0       MySQL
 
 # Development & Testing Tools (Optional)
-django-debug-toolbar==4.2.0  #Debug toolbar for development
-coverage==7.3.0               #Test coverage reports
+django-debug-toolbar==4.2.0  # Debug toolbar for development
+coverage==7.3.0               # Test coverage reports
 
 # Production Deployment (Optional)
-gunicorn==21.2.0       #WSGI HTTP Server
-whitenoise==6.5.0      #Static file serving
-python-decouple==3.8   #Environment variable management
+gunicorn==21.2.0       # WSGI HTTP Server
+whitenoise==6.5.0      # Static file serving
+python-decouple==3.8   # Environment variable management
 
 # Additional Performance (Optional)
-redis==4.6.0           #Caching backend
-celery==5.3.1          #Background task processing
+redis==4.6.0           # Caching backend
+celery==5.3.1          # Background task processing

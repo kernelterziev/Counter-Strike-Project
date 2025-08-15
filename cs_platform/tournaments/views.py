@@ -329,3 +329,74 @@ def get_team_info(request, team_pk):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
+@login_required
+def admin_add_team(request, tournament_id):
+    """Add team to tournament - ADMIN POWER! ⚔️"""
+    tournament = get_object_or_404(Tournament, id=tournament_id)
+
+    if request.method == 'POST':
+        team_id = request.POST.get('team_id')
+        if team_id:
+            try:
+                team = Team.objects.get(id=team_id)
+
+                # Check if team already registered
+                if TournamentParticipation.objects.filter(tournament=tournament, team=team).exists():
+                    messages.warning(request, f'⚠️ Team "{team.name}" is already registered!')
+                else:
+                    # Add team to tournament
+                    TournamentParticipation.objects.create(
+                        tournament=tournament,
+                        team=team,
+                        registration_date=timezone.now().date()
+                    )
+                    messages.success(request, f'🎯 Team "[{team.tag}] {team.name}" added to tournament!')
+
+            except Team.DoesNotExist:
+                messages.error(request, '❌ Team not found!')
+        else:
+            messages.error(request, '❌ No team selected!')
+
+    return redirect('tournament_detail', pk=tournament_id)
+
+
+@login_required
+def admin_remove_team(request, tournament_id):
+    """Remove team from tournament - ADMIN POWER! 🗑️"""
+    tournament = get_object_or_404(Tournament, id=tournament_id)
+
+    if request.method == 'POST':
+        team_id = request.POST.get('team_id')
+        if team_id:
+            try:
+                team = Team.objects.get(id=team_id)
+                participation = TournamentParticipation.objects.filter(
+                    tournament=tournament,
+                    team=team
+                ).first()
+
+                if participation:
+                    participation.delete()
+                    messages.success(request, f'🗑️ Team "[{team.tag}] {team.name}" removed from tournament!')
+                else:
+                    messages.warning(request, f'⚠️ Team "{team.name}" was not registered!')
+
+            except Team.DoesNotExist:
+                messages.error(request, '❌ Team not found!')
+        else:
+            messages.error(request, '❌ No team selected!')
+
+    return redirect('tournament_detail', pk=tournament_id)
+
+@login_required
+def delete_tournament(request, tournament_id):
+    tournament = get_object_or_404(Tournament, id=tournament_id)
+
+    if request.method == 'POST':
+        tournament_name = tournament.name
+        tournament.delete()
+
+        messages.success(request, f'💥 Tournament "{tournament_name}" has been deleted!')
+        return redirect('tournament_list')
+
+    return redirect('tournament_detail', pk=tournament_id)
