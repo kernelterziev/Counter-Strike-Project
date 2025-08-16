@@ -13,7 +13,7 @@ from .models import CustomUser
 User = get_user_model()
 
 
-# Profile Update Form - ENHANCED GAMING VERSION
+# Profile Update Form
 class ProfileUpdateForm(forms.ModelForm):
     favorite_weapon = forms.CharField(
         max_length=50,
@@ -54,7 +54,6 @@ class ProfileUpdateForm(forms.ModelForm):
 
 # Function-based view for home page
 def home(request):
-    """Landing page accessible to everyone"""
     context = {
         'total_users': User.objects.count(),
         'recent_users': User.objects.order_by('-date_joined')[:5],
@@ -80,7 +79,7 @@ def register(request):
     return render(request, 'registration/register.html', {'form': form})
 
 
-# Class-based view for player list - UPDATED with pro players
+# Class-based view for player list
 class PlayerListView(ListView):
     model = User
     template_name = 'accounts/player_list.html'
@@ -101,7 +100,7 @@ class PlayerListView(ListView):
         return User.objects.filter(is_professional=False).order_by('-date_joined')
 
 
-# Class-based view for player detail - ENHANCED with gaming preferences
+# Class-based view for player detail
 class PlayerDetailView(DetailView):
     model = User
     template_name = 'accounts/player_detail.html'
@@ -122,7 +121,7 @@ class PlayerDetailView(DetailView):
         """Get REAL gaming preferences from user data and session"""
         import random
 
-        # Get data from session if available (from profile edit)
+        # Get data from session if available
         session_map = None
         session_team = None
         if hasattr(self, 'request') and self.request.session:
@@ -150,10 +149,10 @@ class PlayerDetailView(DetailView):
         return gaming_preferences
 
 
-# ENHANCED Profile Update View - GAMING BEAST MODE
+# Profile Update View
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = CustomUser
-    form_class = ProfileUpdateForm  # Using the enhanced form
+    form_class = ProfileUpdateForm  # Using the form
     template_name = 'accounts/profile_update.html'
 
     def get_object(self):
@@ -167,10 +166,9 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         favorite_map = self.request.POST.get('favorite_map')
         favorite_team = self.request.POST.get('favorite_team')
 
-        # Save additional preferences (you might want to add these fields to your model)
+        # Save additional preferences
         user = form.save()
 
-        # For now, we'll just save them in session (you can add fields to model later)
         if favorite_map:
             self.request.session['favorite_map'] = favorite_map
         if favorite_team:
@@ -190,7 +188,7 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_invalid(form)
 
 
-# DELETE ACCOUNT VIEW - EPIC DELETION WITH CONFIRMATION
+# DELETE ACCOUNT VIEW
 @login_required
 def delete_account(request):
     """Delete user account permanently"""
@@ -237,7 +235,7 @@ def player_search(request):
         players = players.filter(rank=rank_filter)
 
     context = {
-        'players': players[:20],  # Limit results
+        'players': players[:20],
         'query': query,
         'rank_filter': rank_filter,
         'rank_choices': User.RANK_CHOICES,
