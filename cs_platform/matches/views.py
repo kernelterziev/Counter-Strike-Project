@@ -189,7 +189,7 @@ class MatchListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset().select_related('team1', 'team2')
 
-        # 🔍 SEARCH FUNCTIONALITY (instead of filter)
+        #SEARCH FUNCTIONALITY
         search_query = self.request.GET.get('search', '')
         if search_query:
             queryset = queryset.filter(

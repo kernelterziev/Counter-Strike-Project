@@ -116,7 +116,7 @@ def generate_player_comparison(player1, player2):
     p1_derived = calculate_derived_stats(p1_stats)
     p2_derived = calculate_derived_stats(p2_stats)
 
-    # Mock weapon preferences (realistic data)
+    # Mock weapon preferences
     weapon_preferences = {
         player1.id: [
             {'weapon': 'AK-47', 'kills': p1_stats['total_kills'] // 3, 'percentage': 33.2},
@@ -144,7 +144,7 @@ def generate_player_comparison(player1, player2):
         ]
     }
 
-    # Team history (mock recent teams)
+    # Team history
     team_history = {
         player1.id: [
             {'team': 'Team Vitality', 'period': '2024-2025', 'matches': 45, 'wins': 28},
@@ -305,7 +305,7 @@ def calculate_team_stats(team, matches):
     }
 
 
-# Existing views (keeping them as they were)
+# Existing views
 class WeaponStatsView(ListView):
     model = WeaponStats
     template_name = 'stats/weapon_stats.html'
@@ -320,7 +320,7 @@ class WeaponStatsView(ListView):
         if weapon_filter:
             queryset = queryset.filter(weapon=weapon_filter)
 
-        # If no real data exists, return empty queryset - we'll add mock data in context
+        # If no real data exists, return empty queryset
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -332,11 +332,9 @@ class WeaponStatsView(ListView):
         real_weapon_stats = WeaponStats.objects.exists()
 
         if not real_weapon_stats:
-            # Generate MEGA REALISTIC mock weapon stats! 🔥
             context['weapon_stats'] = self.generate_mock_weapon_stats()
             context['top_weapons'] = self.generate_mock_popular_weapons()
         else:
-            # Use real data if available
             context['top_weapons'] = WeaponStats.objects.values('weapon').annotate(
                 total=Sum('total_kills')
             ).order_by('-total')[:5]
@@ -344,7 +342,6 @@ class WeaponStatsView(ListView):
         return context
 
     def generate_mock_popular_weapons(self):
-        """Generate realistic popular weapons data with UNROUNDED numbers брат! 💪"""
         return [
             {'weapon': 'ak47', 'total': 10165},
             {'weapon': 'm4a1s', 'total': 8547},
@@ -354,7 +351,6 @@ class WeaponStatsView(ListView):
         ]
 
     def generate_mock_weapon_stats(self):
-        """Generate realistic player weapon statistics"""
         # Get some real players to use in our mock data
         players = list(User.objects.filter(is_active=True)[:20])
 
@@ -431,16 +427,14 @@ class MapStatsView(ListView):
         real_map_stats = MapStats.objects.exists()
 
         if not real_map_stats:
-            # Generate EPIC mock map stats! 🔥
             context['map_stats'] = self.generate_mock_map_stats()
 
-        # Always show popular maps with HUGE numbers
+        # Always show popular maps
         context['popular_maps'] = self.generate_mock_popular_maps()
 
         return context
 
     def generate_mock_popular_maps(self):
-        """Generate popular maps with THOUSANDS of matches! 🗺️💪"""
         return [
             {'map_name': 'dust2', 'total_matches': 3420},
             {'map_name': 'mirage', 'total_matches': 3180},
@@ -452,7 +446,6 @@ class MapStatsView(ListView):
         ]
 
     def generate_mock_map_stats(self):
-        """Generate realistic player map statistics"""
         # Get some real players to use in our mock data
         players = list(User.objects.filter(is_active=True)[:25])
 
@@ -509,7 +502,6 @@ class MapStatsView(ListView):
 
 
 def leaderboard(request):
-    """Global leaderboard with various statistics + FAKE DATA MAGIC"""
 
     # Top players by total kills
     top_killers = User.objects.annotate(
@@ -528,7 +520,6 @@ def leaderboard(request):
         else:
             player.kd_ratio = player.total_kills
 
-    # If we don't have enough real fraggers, add some LEGENDARY fake ones! 😂
     if len(top_killers) < 5:
         top_killers = generate_mock_top_fraggers()
 
@@ -541,7 +532,6 @@ def leaderboard(request):
     if len(most_active) < 5:
         most_active = generate_mock_active_players()
 
-    # Mock weapon popularity - REALISTIC UNROUNDED NUMBERS! 💪
     weapon_popularity = [
         {'weapon': 'ak47', 'total_kills': 10165, 'user_count': 245},
         {'weapon': 'm4a1s', 'total_kills': 8547, 'user_count': 198},
@@ -550,7 +540,7 @@ def leaderboard(request):
         {'weapon': 'deagle', 'total_kills': 3876, 'user_count': 134},
     ]
 
-    # Mock map popularity - THOUSANDS of matches! 🗺️
+    # Mock map popularity
     map_popularity = [
         {'map_name': 'dust2', 'total_matches': 3420, 'user_count': 287},
         {'map_name': 'mirage', 'total_matches': 3180, 'user_count': 265},
@@ -589,7 +579,6 @@ def leaderboard(request):
 
 
 def generate_mock_top_fraggers():
-    """Generate legendary fake fraggers with realistic pro names! 💀"""
     fake_fraggers = [
         {'username': 'k1ngslayer_', 'total_kills': 2847, 'total_deaths': 1923, 'kd_ratio': 1.48,
          'rank': 'global_elite'},

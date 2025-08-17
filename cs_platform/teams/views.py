@@ -16,7 +16,6 @@ User = get_user_model()
 
 @login_required
 def create_team_with_roster(request):
-    """Create team with 5 players and roles - BEAST MODE! 🔥"""
 
     if request.method == 'POST':
         # Get form data
@@ -120,7 +119,6 @@ def create_team_with_roster(request):
     return render(request, 'teams/create_team_roster.html', context)
 
 
-# 🎯 BONUS: Quick team stats after creation
 def team_roster_preview(request, team_id):
     """Preview team roster with roles"""
     team = get_object_or_404(Team, id=team_id)
@@ -153,7 +151,6 @@ def team_roster_preview(request, team_id):
     return render(request, 'teams/roster_preview.html', context)
 
 def generate_team_match_history(team):
-    """Generate realistic match history for team detail page"""
     # Use team ID for consistent results
     team_seed = int(hashlib.md5(str(team.id).encode()).hexdigest()[:8], 16)
     random.seed(team_seed)
@@ -177,7 +174,6 @@ def generate_team_match_history(team):
     match_history = []
 
     for i in range(5):  # Last 5 matches
-        # Create realistic match dates
         days_ago = (i + 1) * random.randint(2, 5)  # 2-25 days ago
         match_date = timezone.now() - timedelta(days=days_ago)
 

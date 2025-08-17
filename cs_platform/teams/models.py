@@ -25,7 +25,6 @@ class Team(models.Model):
     captain = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='captained_teams')
 
     def get_realistic_founded_date(self):
-        """Generate realistic founded date between 2010-2020"""
         team_seed = int(hashlib.md5(str(self.id).encode()).hexdigest()[:8], 16)
         random.seed(team_seed)
 
@@ -158,7 +157,6 @@ class TeamMembership(models.Model):
     is_active = models.BooleanField(default=True)
 
     def get_realistic_joined_date(self):
-        """Generate realistic joined date between 2015-2025"""
         # Use combination of player ID and team ID for consistent randomness
         seed = int(hashlib.md5(f"{self.player.id}_{self.team.id}".encode()).hexdigest()[:8], 16)
         random.seed(seed)

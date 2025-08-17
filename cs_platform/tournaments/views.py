@@ -176,7 +176,6 @@ def tournament_register(request, pk):
     return render(request, 'tournaments/tournament_register.html', context)
 
 
-# NEW: Admin function to add ANY team to tournament
 @login_required
 @require_POST
 def admin_add_team(request, tournament_pk):
@@ -222,7 +221,6 @@ def admin_add_team(request, tournament_pk):
     return redirect('tournament_detail', pk=tournament_pk)
 
 
-# NEW: Admin function to remove team from tournament
 @login_required
 @require_POST
 def admin_remove_team(request, tournament_pk):
@@ -266,7 +264,6 @@ def admin_remove_team(request, tournament_pk):
 
 @login_required
 def delete_tournament(request, tournament_id):
-    """Delete a tournament - ORGANIZER ONLY! 🔥"""
     tournament = get_object_or_404(Tournament, id=tournament_id)
 
 
@@ -287,7 +284,6 @@ def delete_tournament(request, tournament_id):
 
 @login_required
 def ajax_delete_tournament(request, tournament_id):
-    """AJAX delete for smooth UX"""
     if request.method == 'POST':
         tournament = get_object_or_404(Tournament, id=tournament_id)
 
@@ -331,7 +327,6 @@ def get_team_info(request, team_pk):
 
 @login_required
 def admin_add_team(request, tournament_id):
-    """Add team to tournament - ADMIN POWER! ⚔️"""
     tournament = get_object_or_404(Tournament, id=tournament_id)
 
     if request.method == 'POST':
@@ -362,7 +357,6 @@ def admin_add_team(request, tournament_id):
 
 @login_required
 def admin_remove_team(request, tournament_id):
-    """Remove team from tournament - ADMIN POWER! 🗑️"""
     tournament = get_object_or_404(Tournament, id=tournament_id)
 
     if request.method == 'POST':

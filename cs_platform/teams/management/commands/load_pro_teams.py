@@ -13,7 +13,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write('Loading Top 15 professional teams...')
 
-        # Professional teams data - COMPLETE TOP 15
+        # Professional teams data
         pro_teams_data = [
             {
                 'name': 'Vitality',
