@@ -2,7 +2,7 @@
 Django==5.2.5
 
 # Image Processing for Avatars & Logos
-Pillow==10.0.0
+Pillow==10.3.0
 
 # REST API Development
 djangorestframework==3.14.0
