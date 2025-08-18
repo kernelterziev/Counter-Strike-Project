@@ -1,35 +1,49 @@
-🔥 CS Platform
+CS Platform
 
-Counter-Strike Team & Tournament Management (Django-based)
+Counter-Strike Team & Tournament Management
 
-A web platform for managing CS teams, matches, tournaments, and player stats. Suitable for both professional and community esports scenes.
+Problem
 
-🌟 Core Features
+Esports teams and communities lack a unified platform to manage rosters, matches, tournaments, and detailed player statistics. Existing solutions are fragmented and often tailored only for professionals.
 
-Team Management – create and manage 5-player rosters with roles
+Solution
 
-Match System – schedule matches, AI predictions, detailed results
+CS Platform provides a complete web-based management system for Counter-Strike, combining professional-grade features with accessibility for community tournaments.
 
-Tournament Organization – full tournament control and brackets
+Product Features
 
-Player Stats – detailed performance tracking (maps, weapons, K/D)
+Team Management – create and organize 5-player rosters with defined roles.
 
-User Authentication – ranks, countries, custom profiles
+Match System – schedule games, run AI predictions, and analyze detailed results.
 
-🎮 Extra Features
+Tournament Control – manage brackets and group stages with full automation.
 
-AI match predictions with betting odds
+Player Statistics – performance tracking across maps, weapons, and K/D.
 
-Player comparison tool (HLTV-style)
+Custom Profiles – authentication, ranks, and player identity.
 
-Real-time match results
+Differentiators
 
-Separate "Pro" and "Community" environments
+AI-powered match predictions with betting odds.
 
-Modern responsive gaming UI
+HLTV-style player comparison tool.
 
-🚀 Tech Stack
+Real-time results updates.
 
-Backend: Django 5.2.5, Django REST Framework, SQLite (easily switchable to PostgreSQL/MySQL)
-Frontend: Bootstrap 5, Custom CSS, JavaScript, Django Templates
-Libraries: Pillow, django-cors-headers, Async views
+Dual environments: Pro (professional teams) & Community (grassroots events).
+
+Modern, responsive, gaming-oriented UI.
+
+Tech Stack
+
+Backend: Django 5.2.5, Django REST Framework.
+
+Frontend: Bootstrap 5, custom CSS, JavaScript.
+
+Database: SQLite (scalable to PostgreSQL/MySQL).
+
+Libraries: Pillow, django-cors-headers, async views.
+
+Vision
+
+To become the go-to platform for managing Counter-Strike tournaments and statistics—bridging the gap between grassroots communities and professional esports.
